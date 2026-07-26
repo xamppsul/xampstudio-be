@@ -48,7 +48,7 @@ RUN composer update \
 ########################################
 # Stage 2: application image
 ########################################
-FROM php:8.3-fpm
+FROM php:8.5-fpm
 
 # Step 1: Install system dependencies (base layer - cached)
 RUN apt-get update && apt-get install -y --no-install-recommends \
