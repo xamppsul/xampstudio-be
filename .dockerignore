@@ -1,0 +1,76 @@
+# Dependencies - WILL BE INSTALLED IN CONTAINER
+vendor/
+node_modules/
+# Version control
+.git
+.gitignore
+.gitattributes
+.github
+.gitlab-ci.yml
+# IDE dan Editor
+.vscode
+.idea
+.venv
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.editorconfig
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.backup
+# Logs dan temporary files
+storage/logs/*
+bootstrap/cache/*
+*.log
+# Testing dan coverage
+tests/
+.phpunit.result.cache
+coverage/
+clover.xml
+# Build files
+dist/
+build/
+*.min.js
+*.min.css
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+# Config files for local development
+docker-compose.local.yml
+.dockerignore
+Dockerfile
+Dockerfile.*
+# OS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+# Development tools
+webpack.mix.js
+tailwind.config.js
+vite.config.js
+tsconfig.json
+jest.config.js
+# Documentation
+README.md
+CHANGELOG.md
+docs/
+.editorconfig
+.prettierrc
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+# Node specific (jika ada frontend build)
+public/js/*.js
+public/css/*.css
+public/mix-manifest.json
