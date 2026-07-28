@@ -101,7 +101,7 @@ return [
 
         'supabase' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL','postgresql://postgres:[YOUR-PASSWORD]@db.hrqwvnftouqimymzjsql.supabase.co:5432/postgres'),
+            'url' => env('DATABASE_URL','postgresql://postgres.hrqwvnftouqimymzjsql:[your_password]@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres'),
         ],
 
         'sqlsrv' => [
