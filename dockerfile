@@ -59,6 +59,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     libzip-dev \
     libicu-dev \
+    libpq-dev \
     zip \
     unzip \
     sqlite3 \
@@ -74,6 +75,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Step 2: Install PHP extensions (base layer - cached)
 RUN docker-php-ext-install \
     pdo_mysql \
+    pdo_pgsql \
+    pgsql \
     pdo_sqlite \
     mbstring \
     exif \
