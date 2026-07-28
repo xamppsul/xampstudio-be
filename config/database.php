@@ -99,6 +99,11 @@ return [
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
+        'supabase' => [
+            'driver' => 'pgsql',
+            'url' => env('DB_URL','postgresql://postgres:[YOUR-PASSWORD]@db.hrqwvnftouqimymzjsql.supabase.co:5432/postgres'),
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
