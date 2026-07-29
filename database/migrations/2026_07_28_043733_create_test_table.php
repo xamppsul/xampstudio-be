@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -22,12 +23,22 @@ return new class extends Migration
         });
 
         //test migrate dari container
-        DB::connection('supabase')->table('test')->insert([
-            'skenario' => 'menambahkan driver pgsql di local dan container',
-            'kondisi' => 'menjalankan skenario',
-            'ekspektasi' => 'koneksi dapat berjalan',
-            'metode' => 'session pooler'
-        ]);
+        try {
+            DB::connection('supabase')->table('test')->insert([
+                'skenario' => 'menambahkan driver pgsql di local dan container',
+                'kondisi' => 'menjalankan skenario',
+                'ekspektasi' => 'koneksi dapat berjalan',
+                'metode' => 'session pooler'
+            ]);
+        } catch (\Exception $error) {
+            DB::connection('mysql')->table('test')->insert([
+                'skenario' => 'menambahkan driver pgsql di local dan container',
+                'kondisi' => 'menjalankan skenario',
+                'ekspektasi' => 'koneksi dapat berjalan',
+                'metode' => 'session pooler'
+            ]);
+            Log::error("Error Koneksi:" . $error->getMessage());
+        }
     }
 
 
