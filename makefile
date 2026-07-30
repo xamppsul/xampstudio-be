@@ -4,6 +4,7 @@ dbuild:
 dpassportkeys:
 	docker exec -it app php artisan passport:keys
 drebuild:
+	docker compose down
 	docker compose up -d --build
 doldimageremove:
 	docker compose down
@@ -21,9 +22,10 @@ dmstatus:
 
 
 
-start:
+start_serve:
+	php artisan serve
+start_octane:
 	php artisan octane:start --server=swoole
-
 refresh:
 	php artisan migrate:refresh
 migrate:

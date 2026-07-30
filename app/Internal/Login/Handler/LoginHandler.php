@@ -20,7 +20,7 @@ class LoginHandler extends LoginConst
     {
         $validate = $validate->ValidateLogin($request);
         if ($validate->fails()) {
-            return $this->Response(422);
+            return $this->Response(422, $validate->errors());
         }
 
         return 'hello';
