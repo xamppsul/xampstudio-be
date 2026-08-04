@@ -8,7 +8,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${YELLOW}========================================${NC}"
-echo -e "${YELLOW}Laravel Application Startup${NC}"
+echo -e "${YELLOW} Xamportfolio ${NC}"
 echo -e "${YELLOW}========================================${NC}"
 
 # Step 1: Check and create .env
@@ -170,7 +170,7 @@ PERSONAL_CLIENT_EXISTS=$(php artisan tinker --execute="
 " 2>/dev/null | tail -n1)
 
 if [ "$PERSONAL_CLIENT_EXISTS" != "YES" ]; then
-    php artisan passport:client --personal --name="Personal Access Client" --no-interaction
+    php artisan passport:client --personal --name="xampstudio" --no-interaction
     echo -e "${GREEN}✓ Passport personal access client created${NC}"
 else
     echo -e "${GREEN}✓ Passport personal access client already exists${NC}"

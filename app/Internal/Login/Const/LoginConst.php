@@ -5,6 +5,8 @@ namespace App\Internal\Login\Const;
 class LoginConst
 {
     const ERROR_VALIDATION = "Terjadi kesalah validasi mohon di perbaiki";
+    const EMAIL_OR_PASSWORD_INVALID = "Email atau password salah";
+    const LOGIN_SUCCESS =  "Anda berhasil login";
 
     protected static function Response(int $code, $data = [], string $message = '')
     {
