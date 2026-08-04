@@ -19,7 +19,7 @@ class AuthenticatedMiddleware
     public function handle(Request $request, Closure $next): Response|RedirectResponse|JsonResponse
     {
         // return $request->expectsJson() ? null : route('auth.view.login');
-        if (!Auth::check()) {
+        if (!Auth::guard('api')->check()) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Session has expired. Please login again.'
