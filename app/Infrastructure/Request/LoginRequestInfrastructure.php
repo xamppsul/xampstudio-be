@@ -12,11 +12,13 @@ class LoginRequestInfrastructure
     {
         return Validator::make($request->request->all(), [
             'email' => 'required|email',
-            'password' => 'required',
-            Password::min(8)
-                ->mixedCase()
-                ->numbers()
-                ->symbols()
+            'password' => [
+                'required',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+            ]
         ]);
     }
 }

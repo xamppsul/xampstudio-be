@@ -23,6 +23,6 @@ class LoginHandler extends LoginConst
             return $this->Response(422, $validate->errors());
         }
 
-        return 'hello';
+        return response()->json(["message" => "halo dunia"]);
     }
 }
