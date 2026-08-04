@@ -21,20 +21,21 @@ class LoginConst
             case $code <= 226:
                 $data = response()->json([
                     'status' => $code,
-                    'message' => $message != '' ? $message : 'Successfully response'
+                    'message' => $message != '' ? $message : 'Successfully response',
+                    'data' => $data
                 ], $code);
                 break;
             case $code <= 308:
                 $data = response()->json([
                     'status' => $code,
-                    'message' => $message != '' ? $message : 'Redirection response'
+                    'message' => $message != '' ? $message : 'Redirection response',
+                    'data' => $data
                 ], $code);
                 break;
             case $code <= 451:
                 $data = response()->json([
                     'status' => $code,
                     'message' => $message != '' ? $message : 'Error response client',
-                    'data' => $data
                 ], $code);
                 break;
             default:

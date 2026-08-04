@@ -33,6 +33,6 @@ class LoginDomainService extends LoginConst
             );
         }
 
-        return $this->Response(422, [], "Email anda tidak ditemukan");
+        return $this->Response(422, [], "Email atau password anda tidak ditemukan");
     }
 }

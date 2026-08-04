@@ -39,11 +39,11 @@ class LoginHandler extends LoginConst
             if (!$data instanceof JsonResponse) {
 
                 #entity return if valid credential login
-                return $this->Response(200, [
+                return $this->Response(200, array(
                     'id' => $data->GetID(),
                     'email' => $data->GetEmail(),
                     'token' => $data->GetToken()
-                ], self::LOGIN_SUCCESS);
+                ), self::LOGIN_SUCCESS);
             }
 
             #default json response event error credential login

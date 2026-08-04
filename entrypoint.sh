@@ -150,17 +150,66 @@ else
 fi
 
 # Step 5: Run migrations
-echo -e "\n${YELLOW}Step 5: Running migrations...${NC}"
-if php artisan migrate --no-interaction 2>/dev/null; then
-    echo -e "${GREEN}✓ Migrations completed${NC}"
+# Decide between `migrate:refresh` and a plain `migrate` based on the
+# current migration state:
+#   - Nothing migrated yet (fresh DB)      -> migrate:refresh
+#   - Every migration already ran (fully migrated) -> migrate:refresh
+#   - Some ran, some pending (partial state)        -> plain migrate
+# migrate:status output lines look like "Yes | 2024_01_01_000000_xxx" or
+# "No  | 2024_01_01_000000_xxx". If the migrations table doesn't exist yet
+# (very first run), the command errors out — that case is treated the same
+# as "nothing migrated".
+echo -e "\n${YELLOW}Step 5: Checking migration status...${NC}"
+
+MIGRATE_STATUS=$(php artisan migrate:status --no-interaction 2>/dev/null || true)
+
+if [ -z "$MIGRATE_STATUS" ]; then
+    RAN_COUNT=0
+    PENDING_COUNT=0
+    NOTHING_MIGRATED=true
 else
-    echo -e "${YELLOW}⚠ Migrations had warnings (non-critical)${NC}"
+    RAN_COUNT=$(echo "$MIGRATE_STATUS" | grep -c "| Yes" || true)
+    PENDING_COUNT=$(echo "$MIGRATE_STATUS" | grep -c "| No" || true)
+    if [ "$RAN_COUNT" -eq 0 ]; then
+        NOTHING_MIGRATED=true
+    else
+        NOTHING_MIGRATED=false
+    fi
 fi
 
-# Step 6: Passport personal access client
+if [ "$NOTHING_MIGRATED" = true ] || [ "$PENDING_COUNT" -eq 0 ]; then
+    echo -e "${YELLOW}Nothing migrated yet or all migrations already ran — running migrate:refresh...${NC}"
+    if php artisan migrate:refresh --no-interaction 2>/dev/null; then
+        echo -e "${GREEN}✓ migrate:refresh completed${NC}"
+    else
+        echo -e "${YELLOW}⚠ migrate:refresh had warnings (non-critical)${NC}"
+    fi
+else
+    echo -e "${YELLOW}Some migrations pending (partial state, ${RAN_COUNT} ran / ${PENDING_COUNT} pending) — running migrate...${NC}"
+    if php artisan migrate --no-interaction 2>/dev/null; then
+        echo -e "${GREEN}✓ Migrations completed${NC}"
+    else
+        echo -e "${YELLOW}⚠ Migrations had warnings (non-critical)${NC}"
+    fi
+fi
+
+# Step 6: Run database seeders
+# Must come after migrations — seeders insert rows into tables that only
+# exist once migrations have run. Guarded with --force since this runs in
+# a non-interactive container context; failures are treated as non-critical
+# (e.g. seeders that assume a clean/empty database and error on rerun)
+# so a restart doesn't crash the whole entrypoint.
+echo -e "\n${YELLOW}Step 6: Running seeders...${NC}"
+if php artisan db:seed --no-interaction --force 2>/dev/null; then
+    echo -e "${GREEN}✓ Seeders completed${NC}"
+else
+    echo -e "${YELLOW}⚠ Seeding had warnings (non-critical)${NC}"
+fi
+
+# Step 7: Passport personal access client
 # Must come after migrations — this writes a row into oauth_clients, which
 # only exists once Passport's migrations have run.
-echo -e "\n${YELLOW}Step 6: Setting up Passport personal access client...${NC}"
+echo -e "\n${YELLOW}Step 7: Setting up Passport personal access client...${NC}"
 
 # `passport:client --personal` creates a NEW client every time it runs, so
 # check the database first. Duplicates break any client_id you've
@@ -176,14 +225,14 @@ else
     echo -e "${GREEN}✓ Passport personal access client already exists${NC}"
 fi
 
-# Step 7: Clear cache
-echo -e "\n${YELLOW}Step 7: Clearing cache...${NC}"
+# Step 8: Clear cache
+echo -e "\n${YELLOW}Step 8: Clearing cache...${NC}"
 php artisan cache:clear > /dev/null 2>&1 || true
 php artisan config:clear > /dev/null 2>&1 || true
 echo -e "${GREEN}✓ Cache cleared${NC}"
 
-# Step 8: Show info
-echo -e "\n${YELLOW}Step 8: Application info${NC}"
+# Step 9: Show info
+echo -e "\n${YELLOW}Step 9: Application info${NC}"
 LARAVEL_VERSION=$(php artisan -V 2>/dev/null | tail -n1)
 DISPLAY_KEY=$(grep "^APP_KEY=" .env | cut -d'=' -f2 | cut -c1-30)
 echo -e "${GREEN}✓ ${LARAVEL_VERSION}${NC}"

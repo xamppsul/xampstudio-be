@@ -21,16 +21,16 @@ class LoginDomainEntities
     #declare method for return data as type
     public function GetID(): ?int
     {
-        return $this->id || null;
+        return $this->id ?? null;
     }
 
     public function GetEmail(): ?string
     {
-        return $this->email || null;
+        return $this->email ?? null;
     }
 
     public function GetToken(): ?string
     {
-        return $this->token || null;
+        return $this->token ?? null;
     }
 }
