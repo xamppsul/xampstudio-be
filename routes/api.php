@@ -1,8 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+Route::prefix('v1')->group(function () {
+    require base_path('app/Internal/Login/Routes/LoginRoutes.php');
+});
+
+#test endpoint
+Route::post('/ping', fn() => response()->json(['message' => 'pong']));
+Route::post('/pong', fn() => response()->json(['message' => 'ping']));
