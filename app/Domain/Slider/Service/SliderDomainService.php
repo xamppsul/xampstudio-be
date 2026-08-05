@@ -2,37 +2,27 @@
 
 namespace App\Domain\Slider\Service;
 
-use App\Domain\Login\Entities\LoginDomainEntities;
-use App\Domain\Login\Interface\LoginDomainInterface;
+use App\Domain\Slider\Interface\SliderDomainInterface;
 use App\Internal\Login\Const\LoginConst;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 
 class SliderDomainService extends LoginConst
 {
     private $repository;
-    public function __construct(LoginDomainInterface $repository)
+    public function __construct(SliderDomainInterface $repository)
     {
         $this->repository = $repository;
     }
 
-    public function Login(
-        string $email,
-        string $password
-    ): JsonResponse|LoginDomainEntities {
-
-        #validate user email
-        $user = $this->repository->ValidateEmail($email);
-        if ($user && $this->repository->ValidatePassword($password, $user->password)) {
-            #generate session of user
-            $token = $this->repository->GenerateSession($user);
-
-            return new LoginDomainEntities(
-                $user->id,
-                $user->email,
-                $token
-            );
+    public function index($request): JsonResponse|Collection|LengthAwarePaginator
+    {
+        $data = $this->repository->ValidateSliderCollection(); #default [] jikalau data kosong
+        if ($data->isNotEmpty()) {
+            return $this->repository->GetSliderCollection($request->title, $request->date); #ambil data
         }
 
-        return $this->Response(422, [], "Email atau password anda tidak ditemukan");
+        return $this->Response(422, [], 'Data slider belum ada');
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->integer('position'); #urutan konten slider yang akan di tampilkan
+            $table->boolean('status')->default(false); #status default mati
             $table->timestamps();
         });
     }

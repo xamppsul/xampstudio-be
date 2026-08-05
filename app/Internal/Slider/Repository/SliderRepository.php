@@ -3,22 +3,25 @@
 namespace App\Internal\Slider\Repository;
 
 use App\Domain\Slider\Interface\SliderDomainInterface;
-use Illuminate\Support\Facades\Hash;
+use App\Infrastructure\Database\Eloquent\Slider;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class SliderRepository implements SliderDomainInterface
 {
-    public function ValidateEmail(string $email): ?User
+    public function ValidateSliderCollection(): Collection
     {
-        return User::where('email', $email)->first();
+        return Slider::query()->get();
     }
 
-    public function ValidatePassword(string $req_password, string $hash_password): Hash|bool
+    public function GetSliderCollection(?string $title = null, ?string $date = null): LengthAwarePaginator
     {
-        return !Hash::check($req_password, $hash_password) ? false : true;
-    }
-
-    public function GenerateSession($user)
-    {
-        return $user->createToken('xampstudio')->accessToken;
+        return Slider::when($title, function ($query) use ($title) {
+            $query->where('title', 'like', "%{$title}%");
+        })->when($date, function ($query) use ($date) {
+            $query->where('created_at', $date);
+        })
+            ->orderBy('position', 'asc')
+            ->paginate(10);
     }
 }

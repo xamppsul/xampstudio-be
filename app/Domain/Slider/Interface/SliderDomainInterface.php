@@ -2,9 +2,11 @@
 
 namespace App\Domain\Slider\Interface;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+
 interface SliderDomainInterface
 {
-    public function ValidateEmail(string $email): ?User;
-    public function ValidatePassword(string $req_password, string $hash_password): Hash|bool;
-    public function GenerateSession($user);
+    public function ValidateSliderCollection(): Collection;
+    public function GetSliderCollection(?string $title = null, ?string $date = null): LengthAwarePaginator;
 }

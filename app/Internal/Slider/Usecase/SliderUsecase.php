@@ -3,6 +3,8 @@
 namespace App\Internal\Slider\Usecase;
 
 use App\Domain\Slider\Service\SliderDomainService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 
 class SliderUsecase
@@ -13,12 +15,21 @@ class SliderUsecase
         $this->service = $service;
     }
 
-    #interaction with domain and send dto:login service
-    public function Login(LoginDTO $dto): JsonResponse|LoginDomainEntities
+    #interact with domain service slider:index
+    public function index($request): JsonResponse|Collection|LengthAwarePaginator
     {
-        return $this->service->Login(
-            $dto->email,
-            $dto->password
-        );
+        return $this->service->index($request);
     }
+
+    #interact with domain service slider:show
+    public function show() {}
+
+    #interact with domain service slider:store
+    public function store() {}
+
+    #interact with domain service slider:update
+    public function update() {}
+
+    #interact with domain service slider:delete
+    public function destroy() {}
 }

@@ -4,6 +4,11 @@ namespace App\Internal\Slider\Const;
 
 class SliderConst
 {
+    const SUCCESSFULLY_LIST = "Berhasil Menampilkan SLider";
+    const SUCCESSFULLY_CREATE = "Berhasil Menambahkan SLider";
+    const SUCCESSFULLY_UPDATE = "Berhasil Mengubah SLider";
+    const SUCCESSFULLY_DELETE = "Berhasil Menghapus SLider";
+
     protected static function Response(int $code, $data = [], string $message = '')
     {
         switch ($code) {
