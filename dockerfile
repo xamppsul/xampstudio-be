@@ -132,7 +132,7 @@ RUN mkdir -p /app/bootstrap/cache /app/storage/logs && \
 USER www-data
 
 # Step 15: Expose port
-EXPOSE 8081
+EXPOSE 8001
 
 # Step 16: Health check
 HEALTHCHECK --interval=15s --timeout=15s --start-period=20s --retries=3 \
@@ -142,4 +142,4 @@ HEALTHCHECK --interval=15s --timeout=15s --start-period=20s --retries=3 \
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Step 18: Run Laravel Octane
-CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8081"]
+CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8001"]

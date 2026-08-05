@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8081:8081"
+      - "8001:8001"
     depends_on:
       dbportfolio:
         condition: service_healthy
@@ -21,14 +21,14 @@ services:
       - laravel
     volumes:
       # Mount untuk hot-reload (development)
-      - ./app:/app/app                    # Source code
-      - ./routes:/app/routes              # Routes
-      - ./config:/app/config              # Config
-      - ./resources:/app/resources        # Views, assets
+      - ./app:/app/app # Source code
+      - ./routes:/app/routes # Routes
+      - ./config:/app/config # Config
+      - ./resources:/app/resources # Views, assets
       # Jangan mount vendor - sudah di image!
       # Jangan mount storage untuk database writes
     healthcheck:
-      test: ["CMD", "php", "-r", "file_exists('vendor/autoload.php') or exit(1);"]
+      test: [ "CMD", "php", "-r", "file_exists('vendor/autoload.php') or exit(1);" ]
       interval: 15s
       timeout: 15s
       retries: 3
@@ -47,7 +47,7 @@ services:
     networks:
       - laravel
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
       interval: 10s
@@ -64,11 +64,24 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       timeout: 3s
       retries: 5
       interval: 10s
-  
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8082:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - laravel
+
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: phpmyadmin
@@ -81,7 +94,7 @@ services:
       dbportfolio:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/index.php"]
+      test: [ "CMD", "curl", "-f", "http://localhost/index.php" ]
       timeout: 10s
       retries: 3
       interval: 10s
