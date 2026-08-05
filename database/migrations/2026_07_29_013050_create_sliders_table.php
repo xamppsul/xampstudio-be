@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('img');
             $table->string('title');
             $table->text('description');
+            $table->integer('position'); #urutan konten slider yang akan di tampilkan
             $table->timestamps();
         });
     }
