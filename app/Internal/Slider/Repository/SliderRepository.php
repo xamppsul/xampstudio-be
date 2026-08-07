@@ -24,4 +24,14 @@ class SliderRepository implements SliderDomainInterface
             ->orderBy('position', 'asc')
             ->paginate(10);
     }
+
+    public function ValidateSliderByID(int $id): bool
+    {
+        return !Slider::whereId($id)->exists() ? false : true;
+    }
+
+    public function GetSliderByID(int $id): Slider
+    {
+        return Slider::whereId($id)->first();
+    }
 }

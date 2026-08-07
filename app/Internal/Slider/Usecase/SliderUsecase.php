@@ -2,6 +2,7 @@
 
 namespace App\Internal\Slider\Usecase;
 
+use App\Domain\Slider\Entities\SliderDomainEntities;
 use App\Domain\Slider\Service\SliderDomainService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,7 +23,10 @@ class SliderUsecase
     }
 
     #interact with domain service slider:show
-    public function show() {}
+    public function show(int $id): JsonResponse|SliderDomainEntities
+    {
+        return $this->service->show($id);
+    }
 
     #interact with domain service slider:store
     public function store() {}

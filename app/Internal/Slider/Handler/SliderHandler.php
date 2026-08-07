@@ -2,6 +2,7 @@
 
 namespace App\Internal\Slider\Handler;
 
+use App\Domain\Slider\Entities\SliderDomainEntities;
 use App\Internal\Slider\Const\SliderConst;
 use App\Internal\Slider\Usecase\SliderUsecase;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -28,11 +29,33 @@ class SliderHandler extends SliderConst
         }
     }
 
-    public function show(int $id)
+    private static function HandleMapSliderDetail($data): array
+    {
+        return array(
+            'id' => $data->GetID(),
+            'img' => $data->GetImg(),
+            'title' => $data->GetTitle(),
+            'description' => $data->GetDescription(),
+            'position' => $data->GetPosition(),
+            'status' => $data->GetStatus()
+        );
+    }
+
+    public function show(int $id): JsonResponse|SliderDomainEntities
     {
         try {
+            $data = $this->usecase->show($id);
+            if (!$data instanceof JsonResponse) {
+                return $this->Response(
+                    200,
+                    $this->HandleMapSliderDetail($data),
+                    'Berhasil menampilkan detail slider'
+                );
+            }
+            return $data;
         } catch (\Exception $error) {
             Log::error("Internal error show api: {$error->getMessage()}");
+            return $this->Response(500, [], $error->getMessage());
         }
     }
 

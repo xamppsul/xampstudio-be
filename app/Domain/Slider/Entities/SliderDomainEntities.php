@@ -10,15 +10,17 @@ class SliderDomainEntities
     private string $title;
     private string $description;
     private string $position;
+    private bool $status;
 
     #inject data: id,img,title,description,position & token(as session)
-    public function __construct(int $id, string $img, string $title, string $description, int $position)
+    public function __construct(int $id, string $img, string $title, string $description, int $position, bool $status)
     {
         $this->id = $id;
         $this->img = $img;
         $this->title = $title;
         $this->description = $description;
         $this->position = $position;
+        $this->status = $status;
     }
 
     #declare method for return data as type
@@ -45,5 +47,10 @@ class SliderDomainEntities
     public function GetPosition(): ?int
     {
         return $this->position ?? null;
+    }
+
+    public function GetStatus(): bool
+    {
+        return $this->status ? true : false;
     }
 }
