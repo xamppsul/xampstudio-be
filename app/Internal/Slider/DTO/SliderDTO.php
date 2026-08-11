@@ -6,19 +6,20 @@ class SliderDTO
 {
 
     #declare property store email & password
-    public string $img, $title, $description;
+    public string $title, $description;
     public int $position;
+    public bool $status;
 
     #receive data email & password
     public function __construct(
-        string $img,
         string $title,
         string $description,
-        int $position
+        int $position,
+        bool $status = false
     ) {
-        $this->img = $img;
         $this->title = $title;
         $this->description = $description;
         $this->position = $position;
+        $this->status = $status;
     }
 }

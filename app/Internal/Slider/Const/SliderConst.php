@@ -48,4 +48,20 @@ class SliderConst
         }
         return $data;
     }
+
+    protected function CustomErrorValidation($data)
+    {
+        $error = collect($data->errors())->map(function ($message, $field) {
+            return [
+                'field' => $field,
+                'message' => $message[0]
+            ];
+        })->values();
+
+        return response()->json([
+            'status' => 422,
+            'message' => 'Data tidak lengkap',
+            'data' => $error
+        ], 422);
+    }
 }

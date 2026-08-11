@@ -4,6 +4,7 @@ namespace App\Internal\Slider\Repository;
 
 use App\Domain\Slider\Interface\SliderDomainInterface;
 use App\Infrastructure\Database\Eloquent\Slider;
+use App\Internal\Slider\DTO\SliderDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -33,5 +34,16 @@ class SliderRepository implements SliderDomainInterface
     public function GetSliderByID(int $id): Slider
     {
         return Slider::whereId($id)->first();
+    }
+
+    public function InsertSliderData(SliderDTO $dto, string $pathImgSliderBase64): Slider
+    {
+        return Slider::create([
+            'img' => $pathImgSliderBase64,
+            'title' => $dto->title,
+            'description' => $dto->description,
+            'position' => $dto->position,
+            'status' => $dto->status,
+        ]);
     }
 }

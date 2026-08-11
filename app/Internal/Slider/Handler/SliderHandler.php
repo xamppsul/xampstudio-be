@@ -3,7 +3,10 @@
 namespace App\Internal\Slider\Handler;
 
 use App\Domain\Slider\Entities\SliderDomainEntities;
+use App\Infrastructure\Database\Eloquent\Slider;
+use App\Infrastructure\Request\SliderRequestInfrastructure;
 use App\Internal\Slider\Const\SliderConst;
+use App\Internal\Slider\DTO\SliderDTO;
 use App\Internal\Slider\Usecase\SliderUsecase;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -59,11 +62,31 @@ class SliderHandler extends SliderConst
         }
     }
 
-    public function store()
+    public function store(Request $request, SliderRequestInfrastructure $validate): JsonResponse|Slider
     {
         try {
+            #validate request
+            $validate = $validate->ValidateSliderRequest($request);
+            if (!$validate->fails()) {
+                $DTO = new SliderDTO(
+                    $request->post('title'),
+                    $request->post('description'),
+                    $request->post('position'),
+                    $request->post('status') ?? false
+                );
+
+                $data = $this->usecase->store($DTO, $request->post('img'));
+                if (!$data instanceof JsonResponse) {
+                    return $this->Response(200, $data, 'Berhasil Upload Slider');
+                }
+
+                return $data; #default json response event error validation base64;
+            }
+
+            return $this->CustomErrorValidation($validate);
         } catch (\Exception $error) {
             Log::error("Internal error store api: {$error->getMessage()}");
+            return $this->Response(500, [], $error->getMessage());
         }
     }
 

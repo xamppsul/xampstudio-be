@@ -4,6 +4,8 @@ namespace App\Internal\Slider\Usecase;
 
 use App\Domain\Slider\Entities\SliderDomainEntities;
 use App\Domain\Slider\Service\SliderDomainService;
+use App\Infrastructure\Database\Eloquent\Slider;
+use App\Internal\Slider\DTO\SliderDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -29,7 +31,10 @@ class SliderUsecase
     }
 
     #interact with domain service slider:store
-    public function store() {}
+    public function store(SliderDTO $dto, string $base64ImageSlider): JsonResponse|Slider
+    {
+        return $this->service->store($dto, $base64ImageSlider);
+    }
 
     #interact with domain service slider:update
     public function update() {}
