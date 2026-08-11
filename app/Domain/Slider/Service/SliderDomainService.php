@@ -57,7 +57,7 @@ class SliderDomainService extends LoginConst
             return $this->repository->InsertSliderData($dto, $path);
         }
 
-        return $path; #return json response event error validation base 64
+        return $path; #default is return json response event error validation base64 Image
 
     }
 }

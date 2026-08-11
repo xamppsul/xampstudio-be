@@ -12,6 +12,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class SliderHandler extends SliderConst
@@ -64,6 +65,7 @@ class SliderHandler extends SliderConst
 
     public function store(Request $request, SliderRequestInfrastructure $validate): JsonResponse|Slider
     {
+        DB::beginTransaction();
         try {
             #validate request
             $validate = $validate->ValidateSliderRequest($request);
@@ -72,19 +74,21 @@ class SliderHandler extends SliderConst
                     $request->post('title'),
                     $request->post('description'),
                     $request->post('position'),
-                    $request->post('status') ?? false
+                    $request->post('status') ?? false #default false event request is empty
                 );
 
                 $data = $this->usecase->store($DTO, $request->post('img'));
+                DB::commit();
                 if (!$data instanceof JsonResponse) {
                     return $this->Response(200, $data, 'Berhasil Upload Slider');
                 }
 
-                return $data; #default json response event error validation base64;
+                return $data; #default is return json response event error validation base64 Image
             }
 
             return $this->CustomErrorValidation($validate);
         } catch (\Exception $error) {
+            DB::rollBack();
             Log::error("Internal error store api: {$error->getMessage()}");
             return $this->Response(500, [], $error->getMessage());
         }
