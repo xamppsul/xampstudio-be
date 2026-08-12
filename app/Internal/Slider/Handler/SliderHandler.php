@@ -71,13 +71,14 @@ class SliderHandler extends SliderConst
             $validate = $validate->ValidateSliderRequest($request);
             if (!$validate->fails()) {
                 $DTO = new SliderDTO(
+                    $request->post('img'),
                     $request->post('title'),
                     $request->post('description'),
                     $request->post('position'),
                     $request->post('status') ?? false #default false event request is empty
                 );
 
-                $data = $this->usecase->store($DTO, $request->post('img'));
+                $data = $this->usecase->store($DTO);
                 DB::commit();
                 if (!$data instanceof JsonResponse) {
                     return $this->Response(200, $data, 'Berhasil Upload Slider');

@@ -31,9 +31,9 @@ class SliderUsecase
     }
 
     #interact with domain service slider:store
-    public function store(SliderDTO $dto, string $base64ImageSlider): JsonResponse|Slider
+    public function store(SliderDTO $dto): JsonResponse|Slider
     {
-        return $this->service->store($dto, $base64ImageSlider);
+        return $this->service->store($dto);
     }
 
     #interact with domain service slider:update

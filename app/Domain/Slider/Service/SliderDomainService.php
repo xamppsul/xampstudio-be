@@ -47,12 +47,12 @@ class SliderDomainService extends LoginConst
         );
     }
 
-    public function store(SliderDTO $dto, string $base64ImageSlider): JsonResponse|Slider
+    public function store(SliderDTO $dto): JsonResponse|Slider
     {
 
         #instance local instance on object of class base64 lib
         $base64 = new Base64Lib();
-        $path = $base64->Index($base64ImageSlider, 'slider'); #return path img after upload s3 aws
+        $path = $base64->Index($dto->img, 'slider'); #return path img after upload s3 aws
         if (!$path instanceof JsonResponse) {
             return $this->repository->InsertSliderData($dto, $path);
         }
