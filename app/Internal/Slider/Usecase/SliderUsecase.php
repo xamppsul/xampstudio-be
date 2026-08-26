@@ -43,5 +43,8 @@ class SliderUsecase
     }
 
     #interact with domain service slider:delete
-    public function destroy() {}
+    public function destroy(int $id): JsonResponse
+    {
+        return $this->service->destroy($id);
+    }
 }

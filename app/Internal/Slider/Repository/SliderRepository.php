@@ -67,4 +67,9 @@ class SliderRepository implements SliderDomainInterface
             'status' => $dto->status,
         ]);
     }
+
+    public function DeleteSliderData(int $id): void
+    {
+        Slider::whereId($id)->delete();
+    }
 }

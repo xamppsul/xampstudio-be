@@ -112,11 +112,13 @@ class SliderHandler extends SliderConst
         }
     }
 
-    public function destroy()
+    public function destroy(int $id): JsonResponse
     {
         try {
+            return $this->usecase->destroy($id);
         } catch (\Exception $error) {
             Log::error("Internal error delete api: {$error->getMessage()}");
+            return $this->Response(500, $error->getMessage());
         }
     }
 }

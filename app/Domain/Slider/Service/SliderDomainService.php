@@ -110,4 +110,14 @@ class SliderDomainService extends SliderConst
 
         return $this->Response(200, 'Berhasil ubah slider');
     }
+
+    public function destroy(int $id): JsonResponse
+    {
+        if (!$this->repository->ValidateSliderByID($id)) {
+            return $this->Response(422, 'Slider tidak di temukan');
+        }
+
+        $this->repository->DeleteSliderData($id);
+        return $this->Response(200, 'Berhasil delete slider');
+    }
 }

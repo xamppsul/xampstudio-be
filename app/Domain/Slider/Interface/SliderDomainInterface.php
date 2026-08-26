@@ -16,4 +16,5 @@ interface SliderDomainInterface
     public function InsertSliderData(SliderDTO $dto, string $pathImgSliderBase64): void;
     public function UpdateSliderDataWithImg(int $id, SliderDTO $dto, string $pathImgSliderBase64): void;
     public function UpdateSliderDataNoImg(int $id, SliderDTO $dto): void;
+    public function DeleteSliderData(int $id): void;
 }
