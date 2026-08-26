@@ -17,11 +17,12 @@ class SliderRepository implements SliderDomainInterface
 
     public function GetSliderCollection(?string $title = null, ?string $date = null): LengthAwarePaginator
     {
-        return Slider::when($title, function ($query) use ($title) {
-            $query->where('title', 'like', "%{$title}%");
-        })->when($date, function ($query) use ($date) {
-            $query->where('created_at', $date);
-        })
+        return Slider::where('status', true)
+            ->when($title, function ($query) use ($title) {
+                $query->where('title', 'like', "%{$title}%");
+            })->when($date, function ($query) use ($date) {
+                $query->where('created_at', $date);
+            })
             ->orderBy('position', 'asc')
             ->paginate(10);
     }
