@@ -3,7 +3,7 @@
 namespace App\Internal\Slider\Handler;
 
 use App\Domain\Slider\Entities\SliderDomainEntities;
-use App\Infrastructure\Database\Eloquent\Slider;
+use App\Infrastructure\Lib\Base64Lib;
 use App\Infrastructure\Request\SliderRequestInfrastructure;
 use App\Internal\Slider\Const\SliderConst;
 use App\Internal\Slider\DTO\SliderDTO;
@@ -18,9 +18,11 @@ use Illuminate\Support\Facades\Log;
 class SliderHandler extends SliderConst
 {
     private $usecase;
-    public function __construct(SliderUsecase $usecase)
+    private $libImg;
+    public function __construct(SliderUsecase $usecase, Base64Lib $libImg)
     {
         $this->usecase = $usecase;
+        $this->libImg = $libImg;
     }
 
     public function index(Request $request): JsonResponse|Collection|LengthAwarePaginator
@@ -29,7 +31,7 @@ class SliderHandler extends SliderConst
             return $this->usecase->index($request);
         } catch (\Exception $error) {
             Log::error("Internal error index api: {$error->getMessage()}");
-            return $this->Response(500, [], $error->getMessage());
+            return $this->Response(500, $error->getMessage());
         }
     }
 
@@ -52,54 +54,80 @@ class SliderHandler extends SliderConst
             if (!$data instanceof JsonResponse) {
                 return $this->Response(
                     200,
+                    'Berhasil menampilkan detail slider',
                     $this->HandleMapSliderDetail($data),
-                    'Berhasil menampilkan detail slider'
                 );
             }
             return $data;
         } catch (\Exception $error) {
             Log::error("Internal error show api: {$error->getMessage()}");
-            return $this->Response(500, [], $error->getMessage());
+            return $this->Response(500, $error->getMessage());
         }
     }
 
-    public function store(Request $request, SliderRequestInfrastructure $validate): JsonResponse|Slider
+    public function store(Request $request, SliderRequestInfrastructure $validate): JsonResponse
     {
-        DB::beginTransaction();
         try {
             #validate request
             $validate = $validate->ValidateSliderRequest($request);
-            if (!$validate->fails()) {
-                $DTO = new SliderDTO(
-                    $request->post('img'),
-                    $request->post('title'),
-                    $request->post('description'),
-                    $request->post('position'),
-                    $request->post('status') ?? false #default false event request is empty
-                );
-
-                $data = $this->usecase->store($DTO);
-                DB::commit();
-                if (!$data instanceof JsonResponse) {
-                    return $this->Response(200, $data, 'Berhasil Upload Slider');
-                }
-
-                return $data; #default is return json response event error validation base64 Image
+            if ($validate->fails()) {
+                return $this->CustomErrorValidation($validate);
             }
 
-            return $this->CustomErrorValidation($validate);
+            #save request
+            $DTO = new SliderDTO(
+                $request->post('img') ?? null,
+                $request->post('title'),
+                $request->post('description'),
+                $request->post('position'),
+                $request->post('status') ?? false #default false event request is empty
+            );
+
+            return $this->usecase->store($DTO);
         } catch (\Exception $error) {
-            DB::rollBack();
             Log::error("Internal error store api: {$error->getMessage()}");
-            return $this->Response(500, [], $error->getMessage());
+            return $this->Response(500, $error->getMessage());
         }
     }
 
-    public function update()
+    public function update(int $id, Request $request, SliderRequestInfrastructure $validate): JsonResponse
     {
+        DB::beginTransaction();
         try {
+            $validate = $validate->ValidateSliderRequest($request);
+            if ($validate->fails()) {
+                return $this->CustomErrorValidation($validate);
+            }
+
+            $DTO = new SliderDTO(
+                $request->post('img') ?? null,
+                $request->post('title'),
+                $request->post('description'),
+                $request->post('position'),
+                $request->post('status') ?? false #default false event request is empty
+            );
+
+            #validation base 64 image
+            if (!empty($DTO->img)) {
+                $imgPath = $this->libImg->Index($DTO->img, 'slider');
+                if ($imgPath instanceof JsonResponse) {
+                    return $imgPath;
+                }
+            }
+
+            $data = $this->usecase->update($id, $DTO);
+            if (!$data instanceof JsonResponse) {
+                #semua transaction sukses lanjut ubah data secara permanen
+                $data;
+                DB::commit();
+                return $this->Response(200, 'Berhasil Mengubah slider');
+            }
+
+            return $data; #return json error dari service karna id slider tidak ditemukan
         } catch (\Exception $error) {
+            DB::rollBack();
             Log::error("Internal error update api: {$error->getMessage()}");
+            return $this->Response(500, $error->getMessage());
         }
     }
 

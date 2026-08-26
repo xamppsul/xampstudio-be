@@ -36,10 +36,31 @@ class SliderRepository implements SliderDomainInterface
         return Slider::whereId($id)->first();
     }
 
-    public function InsertSliderData(SliderDTO $dto, string $pathImgSliderBase64): Slider
+    public function InsertSliderData(SliderDTO $dto, string $pathImgSliderBase64): void
     {
-        return Slider::create([
+        Slider::create([
             'img' => $pathImgSliderBase64,
+            'title' => $dto->title,
+            'description' => $dto->description,
+            'position' => $dto->position,
+            'status' => $dto->status,
+        ]);
+    }
+
+    public function UpdateSliderDataWithImg(int $id, SliderDTO $dto, string $pathImgSliderBase64): void
+    {
+        Slider::whereId($id)->update([
+            'img' => $pathImgSliderBase64,
+            'title' => $dto->title,
+            'description' => $dto->description,
+            'position' => $dto->position,
+            'status' => $dto->status,
+        ]);
+    }
+
+    public function UpdateSliderDataNoImg(int $id, SliderDTO $dto): void
+    {
+        Slider::whereId($id)->update([
             'title' => $dto->title,
             'description' => $dto->description,
             'position' => $dto->position,

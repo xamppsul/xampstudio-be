@@ -31,13 +31,16 @@ class SliderUsecase
     }
 
     #interact with domain service slider:store
-    public function store(SliderDTO $dto): JsonResponse|Slider
+    public function store(SliderDTO $dto): JsonResponse
     {
         return $this->service->store($dto);
     }
 
     #interact with domain service slider:update
-    public function update() {}
+    public function update(int $id, SliderDTO $dto): JsonResponse
+    {
+        return $this->service->update($id, $dto);
+    }
 
     #interact with domain service slider:delete
     public function destroy() {}

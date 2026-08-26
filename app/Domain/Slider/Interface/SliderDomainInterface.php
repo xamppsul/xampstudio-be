@@ -13,5 +13,7 @@ interface SliderDomainInterface
     public function GetSliderCollection(?string $title = null, ?string $date = null): LengthAwarePaginator;
     public function ValidateSliderByID(int $id): bool;
     public function GetSliderByID(int $id): Slider;
-    public function InsertSliderData(SliderDTO $dto, string $pathImgSliderBase64): Slider;
+    public function InsertSliderData(SliderDTO $dto, string $pathImgSliderBase64): void;
+    public function UpdateSliderDataWithImg(int $id, SliderDTO $dto, string $pathImgSliderBase64): void;
+    public function UpdateSliderDataNoImg(int $id, SliderDTO $dto): void;
 }

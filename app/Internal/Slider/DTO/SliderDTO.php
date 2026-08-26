@@ -6,13 +6,15 @@ class SliderDTO
 {
 
     #declare property store img,title,description,position,status
-    public string $img, $title, $description;
+    public ?string $img;
+    public string $title;
+    public string $description;
     public int $position;
     public bool $status;
 
     #recive property of request img(base64),title(string),description(string),position(string),status(bool)
     public function __construct(
-        string $img,
+        ?string $img,
         string $title,
         string $description,
         int $position,

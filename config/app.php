@@ -65,7 +65,19 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image not found
+    |--------------------------------------------------------------------------
+    |
+    | If didn't upload real origin image the system should be send default
+    | Image is from get a google picture. 
+    |
+    */
+
+    'img_path_not_fund' => env('IMG_PATH_NOT_FOUND', "path doesn't exists"),
 
     /*
     |--------------------------------------------------------------------------

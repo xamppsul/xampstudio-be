@@ -10,9 +10,9 @@ class SliderRequestInfrastructure
     public function ValidateSliderRequest(Request $request)
     {
 
-        #validate body request only
+        #validate body request only (post)
         return Validator::make($request->request->all(), [
-            'img' => 'required|string',
+            'img' => 'string', //gak wajib kalo mau pake gambar silahkan
             'title' => 'required|string',
             'description' => 'required|string',
             'position' => 'required|integer',
