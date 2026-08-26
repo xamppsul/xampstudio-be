@@ -79,18 +79,35 @@ class SliderDomainService extends SliderConst
 
     public function update(int $id, SliderDTO $dto): JsonResponse
     {
-        if ($this->repository->ValidateSliderByID($id)) {
-
-            if (!empty($dto->img)) {
-                #request up gambar then upload real img to s3
-                $imgPath = $this->libImg->Index($dto->img, 'slider');
-                $this->repository->UpdateSliderDataWithImg($id, $dto, $imgPath);
-            } else {
-                #default: gambar tidak berubah
-                $this->repository->UpdateSliderDataNoImg($id, $dto);
-            }
+        if (!$this->repository->ValidateSliderByID($id)) {
+            return $this->Response(422, 'Slider tidak di temukan');
         }
 
-        return $this->Response(422, 'Slider tidak di temukan');
+        if (!empty($dto->img)) {
+            #request up gambar then upload real img to s3
+            $imgPath = $this->libImg->Index($dto->img, 'slider');
+            if ($imgPath instanceof JsonResponse) {
+                return $imgPath;
+            }
+
+            DB::transaction(function () use ($id, $dto, $imgPath) {
+                $this->repository->UpdateSliderDataWithImg(
+                    $id,
+                    $dto,
+                    $imgPath
+                );
+            });
+        } else {
+            #default: gambar tidak berubah
+            DB::transaction(function () use ($id, $dto) {
+                $this->repository->UpdateSliderDataNoImg(
+                    $id,
+                    $dto
+                );
+            });
+        }
+
+
+        return $this->Response(200, 'Berhasil ubah slider');
     }
 }

@@ -12,7 +12,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class SliderHandler extends SliderConst
@@ -92,7 +91,6 @@ class SliderHandler extends SliderConst
 
     public function update(int $id, Request $request, SliderRequestInfrastructure $validate): JsonResponse
     {
-        DB::beginTransaction();
         try {
             $validate = $validate->ValidateSliderRequest($request);
             if ($validate->fails()) {
@@ -107,25 +105,8 @@ class SliderHandler extends SliderConst
                 $request->post('status') ?? false #default false event request is empty
             );
 
-            #validation base 64 image
-            if (!empty($DTO->img)) {
-                $imgPath = $this->libImg->Index($DTO->img, 'slider');
-                if ($imgPath instanceof JsonResponse) {
-                    return $imgPath;
-                }
-            }
-
-            $data = $this->usecase->update($id, $DTO);
-            if (!$data instanceof JsonResponse) {
-                #semua transaction sukses lanjut ubah data secara permanen
-                $data;
-                DB::commit();
-                return $this->Response(200, 'Berhasil Mengubah slider');
-            }
-
-            return $data; #return json error dari service karna id slider tidak ditemukan
+            return $this->usecase->update($id, $DTO);
         } catch (\Exception $error) {
-            DB::rollBack();
             Log::error("Internal error update api: {$error->getMessage()}");
             return $this->Response(500, $error->getMessage());
         }
