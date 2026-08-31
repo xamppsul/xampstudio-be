@@ -3,7 +3,6 @@
 namespace App\Internal\Slider\Handler;
 
 use App\Domain\Slider\Entities\SliderDomainEntities;
-use App\Infrastructure\Lib\Base64Lib;
 use App\Infrastructure\Request\SliderRequestInfrastructure;
 use App\Internal\Slider\Const\SliderConst;
 use App\Internal\Slider\DTO\SliderDTO;
@@ -17,11 +16,9 @@ use Illuminate\Support\Facades\Log;
 class SliderHandler extends SliderConst
 {
     private $usecase;
-    private $libImg;
-    public function __construct(SliderUsecase $usecase, Base64Lib $libImg)
+    public function __construct(SliderUsecase $usecase)
     {
         $this->usecase = $usecase;
-        $this->libImg = $libImg;
     }
 
     public function index(Request $request): JsonResponse|Collection|LengthAwarePaginator
