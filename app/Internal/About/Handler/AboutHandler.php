@@ -75,9 +75,9 @@ class AboutHandler extends AboutConst
             $DTO = new AboutDTO(
                 $request->post('core_values') ?? [],
                 $request->post('experience_during'),
-                $request->post('description'),
-                $request->post('project_is_done'),
-                $request->post('client_response'),
+                $request->post('description') ?? null,
+                $request->post('project_is_done') ?? 0,
+                $request->post('client_response') ?? 0,
                 $request->post('img') ?? null
             );
 
