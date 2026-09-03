@@ -13,6 +13,7 @@ interface AboutDomainInterface
     public function GetAboutCollection(?string $title = null, ?string $date = null): LengthAwarePaginator;
     public function ValidateAboutByID(int $id): bool;
     public function GetAboutByID(int $id): About;
+    public function GetCoreValueByAboutID(int $id);
     public function InsertAboutData(AboutDTO $dto, string $pathImgAboutBase64): void;
     public function UpdateAboutDataWithImg(int $id, AboutDTO $dto, string $pathImgAboutBase64): void;
     public function UpdateAboutDataNoImg(int $id, AboutDTO $dto): void;

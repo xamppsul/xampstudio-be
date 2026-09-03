@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('core_values', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('abouts_id')
+                ->references('id')
+                ->on('abouts');
             $table->string('name');
             $table->timestamps();
         });

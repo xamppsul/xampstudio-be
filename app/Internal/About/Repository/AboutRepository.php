@@ -7,6 +7,7 @@ use App\Infrastructure\Database\Eloquent\About;
 use App\Internal\About\DTO\AboutDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AboutRepository implements AboutDomainInterface
 {
@@ -35,6 +36,14 @@ class AboutRepository implements AboutDomainInterface
     public function GetAboutByID(int $id): About
     {
         return About::whereId($id)->first();
+    }
+
+    public function GetCoreValueByAboutID(int $id)
+    {
+        return DB::table('core_values')
+            ->where('abouts_id', $id)
+            ->get(["name"])
+            ->toArray();
     }
 
     public function InsertAboutData(AboutDTO $dto, string $pathImgAboutBase64): void

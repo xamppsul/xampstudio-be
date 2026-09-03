@@ -42,11 +42,12 @@ class AboutDomainService extends AboutConst
 
         return new AboutDomainEntities(
             $this->repository->GetAboutByID($id)->id,
-            $this->repository->GetAboutByID($id)->img,
-            $this->repository->GetAboutByID($id)->title,
+            $this->repository->GetCoreValueByAboutID($id),
+            $this->repository->GetAboutByID($id)->experience_during,
             $this->repository->GetAboutByID($id)->description,
-            $this->repository->GetAboutByID($id)->position,
-            $this->repository->GetAboutByID($id)->status
+            $this->repository->GetAboutByID($id)->project_is_done,
+            $this->repository->GetAboutByID($id)->client_response,
+            $this->repository->GetAboutByID($id)->img,
         );
     }
 

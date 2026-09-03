@@ -14,9 +14,6 @@ return new class extends Migration
         Schema::create('abouts', function (Blueprint $table) {
             $table->id();
             $table->text('description');
-            $table->foreignId('core_values_id')
-                ->references('id')
-                ->on('core_values');
             $table->bigInteger('experience_during');
             $table->bigInteger('project_is_done');
             $table->bigInteger('client_response');

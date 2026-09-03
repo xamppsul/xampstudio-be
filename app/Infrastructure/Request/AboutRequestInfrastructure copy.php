@@ -12,11 +12,12 @@ class AboutRequestInfrastructure
 
         #validate body request only (post)
         return Validator::make($request->request->all(), [
-            'img' => 'string', //gak wajib kalo mau pake gambar silahkan
-            'title' => 'required|string',
+            'core_value' => 'array|required', //gak wajib kalo mau pake gambar silahkan
+            'experience_during' => 'required|int',
             'description' => 'required|string',
-            'position' => 'required|integer',
-            'status' => 'boolean',
+            'project_is_done' => 'required|integer',
+            'client_response' => 'required|integer',
+            'img' => 'string|required',
         ]);
     }
 }

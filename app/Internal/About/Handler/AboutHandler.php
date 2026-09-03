@@ -35,11 +35,12 @@ class AboutHandler extends AboutConst
     {
         return array(
             'id' => $data->GetID(),
-            'img' => $data->GetImg(),
-            'title' => $data->GetTitle(),
+            'core_value' => $data->GetCoreValuesID(),
+            'experience_during' => $data->GetExperienceDuring(),
             'description' => $data->GetDescription(),
-            'position' => $data->GetPosition(),
-            'status' => $data->GetStatus()
+            'project_is_done' => $data->GetProjectIsDone(),
+            'client_response' => $data->GetClientResponse(),
+            'img' => $data->GetImg()
         );
     }
 
@@ -72,11 +73,12 @@ class AboutHandler extends AboutConst
 
             #save request
             $DTO = new AboutDTO(
-                $request->post('img') ?? null,
-                $request->post('title'),
+                $request->post('core_values') ?? [],
+                $request->post('experience_during'),
                 $request->post('description'),
-                $request->post('position'),
-                $request->post('status') ?? false #default false event request is empty
+                $request->post('project_is_done'),
+                $request->post('client_response'),
+                $request->post('img') ?? null
             );
 
             return $this->usecase->store($DTO);
@@ -95,11 +97,12 @@ class AboutHandler extends AboutConst
             }
 
             $DTO = new AboutDTO(
-                $request->post('img') ?? null,
-                $request->post('title'),
+                $request->post('core_values') ?? [],
+                $request->post('experience_during'),
                 $request->post('description'),
-                $request->post('position'),
-                $request->post('status') ?? false #default false event request is empty
+                $request->post('project_is_done'),
+                $request->post('client_response'),
+                $request->post('img') ?? null
             );
 
             return $this->usecase->update($id, $DTO);

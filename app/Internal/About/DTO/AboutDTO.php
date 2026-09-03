@@ -5,25 +5,28 @@ namespace App\Internal\About\DTO;
 class AboutDTO
 {
 
-    #declare property store img,title,description,position,status
-    public ?string $img;
-    public string $title;
+    #declare property store core_values,experience_during,description,project_is_done,client_response,img
+    public array $core_values;
+    public int $experience_during;
     public string $description;
-    public int $position;
-    public bool $status;
+    public int $project_is_done;
+    public int $client_response;
+    public ?string $img;
 
-    #recive property of request img(base64),title(string),description(string),position(string),status(bool)
+    #recive property of request core_values,experience_during,description,project_is_done,client_response,img(base 64)
     public function __construct(
-        ?string $img,
-        string $title,
+        array $core_values,
+        int $experience_during,
         string $description,
-        int $position,
-        bool $status = false
+        int $project_is_done,
+        int $client_response,
+        ?string $img
     ) {
-        $this->img = $img;
-        $this->title = $title;
+        $this->core_values = $core_values;
+        $this->experience_during = $experience_during;
         $this->description = $description;
-        $this->position = $position;
-        $this->status = $status;
+        $this->project_is_done = $project_is_done;
+        $this->client_response = $client_response;
+        $this->img = $img;
     }
 }
