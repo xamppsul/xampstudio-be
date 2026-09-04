@@ -27,7 +27,7 @@ class AboutHandler extends AboutConst
             return $this->usecase->index($request);
         } catch (\Exception $error) {
             Log::error("Internal error index api: {$error->getMessage()}");
-            return $this->Response(500, $error->getMessage());
+            return config('app.debug') != true ? $this->Response(500, "Maaf ada kesalahan pada sistem") : $this->Response(500, $error->getMessage());
         }
     }
 
@@ -58,7 +58,7 @@ class AboutHandler extends AboutConst
             return $data;
         } catch (\Exception $error) {
             Log::error("Internal error show api: {$error->getMessage()}");
-            return $this->Response(500, $error->getMessage());
+            return config('app.debug') != true ? $this->Response(500, "Maaf ada kesalahan pada sistem") : $this->Response(500, $error->getMessage());
         }
     }
 
@@ -78,13 +78,14 @@ class AboutHandler extends AboutConst
                 $request->post('description') ?? null,
                 $request->post('project_is_done') ?? 0,
                 $request->post('client_response') ?? 0,
-                $request->post('img') ?? null
+                $request->post('img') ?? null,
+                $request->post('status') ?? false
             );
 
             return $this->usecase->store($DTO);
         } catch (\Exception $error) {
             Log::error("Internal error store api: {$error->getMessage()}");
-            return $this->Response(500, $error->getMessage());
+            return config('app.debug') != true ? $this->Response(500, "Maaf ada kesalahan pada sistem") : $this->Response(500, $error->getMessage());
         }
     }
 
@@ -108,7 +109,7 @@ class AboutHandler extends AboutConst
             return $this->usecase->update($id, $DTO);
         } catch (\Exception $error) {
             Log::error("Internal error update api: {$error->getMessage()}");
-            return $this->Response(500, $error->getMessage());
+            return config('app.debug') != true ? $this->Response(500, "Maaf ada kesalahan pada sistem") : $this->Response(500, $error->getMessage());
         }
     }
 
@@ -118,7 +119,7 @@ class AboutHandler extends AboutConst
             return $this->usecase->destroy($id);
         } catch (\Exception $error) {
             Log::error("Internal error delete api: {$error->getMessage()}");
-            return $this->Response(500, $error->getMessage());
+            return config('app.debug') != true ? $this->Response(500, "Maaf ada kesalahan pada sistem") : $this->Response(500, $error->getMessage());
         }
     }
 }

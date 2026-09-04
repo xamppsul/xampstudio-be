@@ -27,7 +27,11 @@ class AboutDomainService extends AboutConst
     {
         $data = $this->repository->ValidateAboutCollection(); #default [] jikalau data kosong
         if ($data->isNotEmpty()) {
-            return $this->repository->GetAboutCollection($request->title, $request->date); #ambil data
+            return $this->repository->GetAboutCollection(
+                $request->experience_during,
+                $request->project_is_done,
+                $request->client_response
+            ); #ambil data
         }
 
         return $this->Response(422, 'Data About belum ada');
@@ -51,28 +55,54 @@ class AboutDomainService extends AboutConst
         );
     }
 
-    public function store(AboutDTO $dto)
+    public function store(AboutDTO $dto): JsonResponse
     {
         if (empty($dto->img)) {
             #pake gambar default kalo gak upload gambar real
             DB::transaction(function () use ($dto) {
-                $this->repository->InsertAboutData(
+                #insert parent about
+                $about = $this->repository->InsertAboutData(
                     $dto,
                     config('app.img_path_not_fund')
                 );
+
+                $core_value = [];
+                foreach ($dto->core_values as $data) {
+                    $core_value[] = [
+                        'abouts_id' => $about->id,
+                        'name' => $data,
+                        'created_at' => now()
+                    ];
+                }
+
+                #insert chid about of core value
+                $this->repository->InsertCoreValuesByAboutID($core_value);
             });
         } else {
             #default: upload gambar real
             #validation base 64 image
-            $imgPath = $this->libImg->Index($dto->img, 'About');
+            $imgPath = $this->libImg->Index($dto->img, 'about');
             if ($imgPath instanceof JsonResponse) {
                 return $imgPath;
             }
+
             DB::transaction(function () use ($dto, $imgPath) {
-                $this->repository->InsertAboutData(
+                $about = $this->repository->InsertAboutData(
                     $dto,
                     $imgPath
                 );
+
+                $core_value = [];
+                foreach ($dto->core_values as $data) {
+                    $core_value[] = [
+                        'abouts_id' => $about->id,
+                        'name' => $data,
+                        'created_at' => now()
+                    ];
+                }
+
+                #insert chid about of core value
+                $this->repository->InsertCoreValuesByAboutID($core_value);
             });
         }
         return $this->Response(200, 'Berhasil tambah About');
@@ -86,7 +116,7 @@ class AboutDomainService extends AboutConst
 
         if (!empty($dto->img)) {
             #request up gambar then upload real img to s3
-            $imgPath = $this->libImg->Index($dto->img, 'About');
+            $imgPath = $this->libImg->Index($dto->img, 'about');
             if ($imgPath instanceof JsonResponse) {
                 return $imgPath;
             }

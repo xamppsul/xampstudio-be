@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('project_is_done');
             $table->bigInteger('client_response');
             $table->string('img');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

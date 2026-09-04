@@ -4,6 +4,7 @@ namespace App\Internal\About\Repository;
 
 use App\Domain\About\Interface\AboutDomainInterface;
 use App\Infrastructure\Database\Eloquent\About;
+use App\Infrastructure\Database\Eloquent\Core_value;
 use App\Internal\About\DTO\AboutDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,16 +17,19 @@ class AboutRepository implements AboutDomainInterface
         return About::query()->get();
     }
 
-    public function GetAboutCollection(?string $title = null, ?string $date = null): LengthAwarePaginator
+    public function GetAboutCollection(?int $experience_during, ?int $project_is_done, ?int $client_response): LengthAwarePaginator
     {
         return About::where('status', true)
-            ->when($title, function ($query) use ($title) {
-                $query->where('title', 'like', "%{$title}%");
-            })->when($date, function ($query) use ($date) {
-                $query->where('created_at', $date);
+            ->when($experience_during, function ($query) use ($experience_during) {
+                $query->where('experience_during', $experience_during);
             })
-            ->orderBy('position', 'asc')
-            ->paginate(10);
+            ->when($project_is_done, function ($query) use ($project_is_done) {
+                $query->where('project_is_done', $project_is_done);
+            })
+            ->when($client_response, function ($query) use ($client_response) {
+                $query->where('client_response', $client_response);
+            })
+            ->paginate(5);
     }
 
     public function ValidateAboutByID(int $id): bool
@@ -46,35 +50,48 @@ class AboutRepository implements AboutDomainInterface
             ->toArray();
     }
 
-    public function InsertAboutData(AboutDTO $dto, string $pathImgAboutBase64): void
+    public function InsertAboutData(AboutDTO $dto, string $pathImgAboutBase64): About
     {
-        About::create([
+        return About::create([
             'img' => $pathImgAboutBase64,
-            'title' => $dto->title,
             'description' => $dto->description,
-            'position' => $dto->position,
-            'status' => $dto->status,
+            'experience_during' => $dto->experience_during,
+            'project_is_done' => $dto->project_is_done,
+            'client_response' => $dto->client_response,
+            'status' => $dto->status
         ]);
+    }
+
+    /**
+     * @method InsertCoreValuesByAboutID()
+     * @param $data <- insert core value for about
+     */
+    public function InsertCoreValuesByAboutID(array $data): void
+    {
+        Core_value::insert($data);
     }
 
     public function UpdateAboutDataWithImg(int $id, AboutDTO $dto, string $pathImgAboutBase64): void
     {
         About::whereId($id)->update([
             'img' => $pathImgAboutBase64,
-            'title' => $dto->title,
             'description' => $dto->description,
-            'position' => $dto->position,
-            'status' => $dto->status,
+            'experience_during' => $dto->experience_during,
+            'project_is_done' => $dto->project_is_done,
+            'client_response' => $dto->client_response,
+            'status' => $dto->status
+
         ]);
     }
 
     public function UpdateAboutDataNoImg(int $id, AboutDTO $dto): void
     {
         About::whereId($id)->update([
-            'title' => $dto->title,
             'description' => $dto->description,
-            'position' => $dto->position,
-            'status' => $dto->status,
+            'experience_during' => $dto->experience_during,
+            'project_is_done' => $dto->project_is_done,
+            'client_response' => $dto->client_response,
+            'status' => $dto->status
         ]);
     }
 
