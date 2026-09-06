@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('core_values', function (Blueprint $table) {
+        Schema::create('abouts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('abouts_id')
-                ->references('id')
-                ->on('abouts');
-            $table->string('name');
+            $table->text('description');
+            $table->bigInteger('experience_during');
+            $table->bigInteger('project_is_done');
+            $table->bigInteger('client_response');
+            $table->string('img');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('core_values');
+        Schema::dropIfExists('abouts');
     }
 };
