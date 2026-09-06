@@ -89,8 +89,8 @@ class AboutRepository implements AboutDomainInterface
     public function UpdateCoreValueByAboutID(int $abouts_id, int $core_values_id, string $name): void
     {
         Core_value::where([
-            ['about_id', '=', $abouts_id],
-            ['core_value_id', '=', $core_values_id]
+            ['id', '=', $core_values_id],
+            ['abouts_id', '=', $abouts_id]
         ])->update(['name' => $name]);
     }
 

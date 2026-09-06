@@ -122,14 +122,6 @@ class AboutDomainService extends AboutConst
 
         if (!empty($dto->img)) {
 
-            #core value is array & not null jalankan request
-            if (is_array($dto->core_values) && !empty($dto->core_values)) {
-
-                foreach ($dto->core_values as $cv) {
-                    $this->repository->UpdateCoreValueByAboutID($id, $cv->id, $cv->name);
-                }
-            }
-
             #request up gambar then upload real img to s3
             $imgPath = $this->libImg->Index($dto->img, 'about');
             if ($imgPath instanceof JsonResponse) {
@@ -137,6 +129,18 @@ class AboutDomainService extends AboutConst
             }
 
             DB::transaction(function () use ($id, $dto, $imgPath) {
+                #core value is array & not null jalankan request
+                if (is_array($dto->core_values) && !empty($dto->core_values)) {
+
+                    foreach ($dto->core_values as $cv) {
+                        $this->repository->UpdateCoreValueByAboutID(
+                            $id,
+                            $cv['id'],
+                            $cv['name']
+                        );
+                    }
+                }
+
                 $this->repository->UpdateAboutDataWithImg(
                     $id,
                     $dto,
@@ -144,16 +148,20 @@ class AboutDomainService extends AboutConst
                 );
             });
         } else {
-            #core value is array & not null jalankan request
-            if (is_array($dto->core_values) && !empty($dto->core_values)) {
-
-                foreach ($dto->core_values as $cv) {
-                    $this->repository->UpdateCoreValueByAboutID($id, $cv->id, $cv->name);
-                }
-            }
-
             #default: gambar tidak berubah
             DB::transaction(function () use ($id, $dto) {
+                #core value is array & not null jalankan request
+                if (is_array($dto->core_values) && !empty($dto->core_values)) {
+
+                    foreach ($dto->core_values as $cv) {
+                        $this->repository->UpdateCoreValueByAboutID(
+                            $id,
+                            $cv['id'],
+                            $cv['name']
+                        );
+                    }
+                }
+
                 $this->repository->UpdateAboutDataNoImg(
                     $id,
                     $dto
