@@ -39,20 +39,26 @@ class AboutDomainService extends AboutConst
 
     public function show(int $id): JsonResponse|AboutDomainEntities
     {
-
-        if (!$this->repository->ValidateAboutByID($id)) {
-            return $this->Response(422, 'About tidak di temukan');
+        if (
+            $this->repository->ValidateAboutByID($id) &&
+            !is_null($this->repository->GetAboutByID($id))
+        ) {
+            return new AboutDomainEntities(
+                $this->repository->GetAboutByID($id)->id,
+                $this->repository->GetAboutByID($id)->core_values
+                    ->pluck('name')
+                    ->values()
+                    ->toArray(),
+                $this->repository->GetAboutByID($id)->experience_during,
+                $this->repository->GetAboutByID($id)->description,
+                $this->repository->GetAboutByID($id)->project_is_done,
+                $this->repository->GetAboutByID($id)->client_response,
+                $this->repository->GetAboutByID($id)->img,
+                $this->repository->GetAboutByID($id)->status
+            );
         }
 
-        return new AboutDomainEntities(
-            $this->repository->GetAboutByID($id)->id,
-            $this->repository->GetCoreValueByAboutID($id),
-            $this->repository->GetAboutByID($id)->experience_during,
-            $this->repository->GetAboutByID($id)->description,
-            $this->repository->GetAboutByID($id)->project_is_done,
-            $this->repository->GetAboutByID($id)->client_response,
-            $this->repository->GetAboutByID($id)->img,
-        );
+        return $this->Response(422, 'About tidak di temukan atau masih nonaktif');
     }
 
     public function store(AboutDTO $dto): JsonResponse
@@ -115,6 +121,15 @@ class AboutDomainService extends AboutConst
         }
 
         if (!empty($dto->img)) {
+
+            #core value is array & not null jalankan request
+            if (is_array($dto->core_values) && !empty($dto->core_values)) {
+
+                foreach ($dto->core_values as $cv) {
+                    $this->repository->UpdateCoreValueByAboutID($id, $cv->id, $cv->name);
+                }
+            }
+
             #request up gambar then upload real img to s3
             $imgPath = $this->libImg->Index($dto->img, 'about');
             if ($imgPath instanceof JsonResponse) {
@@ -129,6 +144,14 @@ class AboutDomainService extends AboutConst
                 );
             });
         } else {
+            #core value is array & not null jalankan request
+            if (is_array($dto->core_values) && !empty($dto->core_values)) {
+
+                foreach ($dto->core_values as $cv) {
+                    $this->repository->UpdateCoreValueByAboutID($id, $cv->id, $cv->name);
+                }
+            }
+
             #default: gambar tidak berubah
             DB::transaction(function () use ($id, $dto) {
                 $this->repository->UpdateAboutDataNoImg(

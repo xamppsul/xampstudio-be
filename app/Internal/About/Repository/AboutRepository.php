@@ -8,7 +8,7 @@ use App\Infrastructure\Database\Eloquent\Core_value;
 use App\Internal\About\DTO\AboutDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\DB;
 
 class AboutRepository implements AboutDomainInterface
 {
@@ -17,9 +17,13 @@ class AboutRepository implements AboutDomainInterface
         return About::query()->get();
     }
 
-    public function GetAboutCollection(?int $experience_during, ?int $project_is_done, ?int $client_response): LengthAwarePaginator
-    {
-        return About::where('status', true)
+    public function GetAboutCollection(
+        ?int $experience_during,
+        ?int $project_is_done,
+        ?int $client_response
+    ): LengthAwarePaginator {
+        return About::with('core_values')
+            ->where('status', true)
             ->when($experience_during, function ($query) use ($experience_during) {
                 $query->where('experience_during', $experience_during);
             })
@@ -37,18 +41,23 @@ class AboutRepository implements AboutDomainInterface
         return !About::whereId($id)->exists() ? false : true;
     }
 
-    public function GetAboutByID(int $id): About
+    public function GetAboutByID(int $id): ?About
     {
-        return About::whereId($id)->first();
+        return About::where([
+            ['id', '=', $id],
+            ['status', '!=', 0]
+        ])
+            ->with('core_values')
+            ->first();
     }
 
-    public function GetCoreValueByAboutID(int $id)
-    {
-        return DB::table('core_values')
-            ->where('abouts_id', $id)
-            ->get(["name"])
-            ->toArray();
-    }
+    // public function GetCoreValueByAboutID(int $id)
+    // {
+    //     return DB::table('core_values')
+    //         ->where('abouts_id', $id)
+    //         ->get(["name"])
+    //         ->toArray();
+    // }
 
     public function InsertAboutData(AboutDTO $dto, string $pathImgAboutBase64): About
     {
@@ -69,6 +78,20 @@ class AboutRepository implements AboutDomainInterface
     public function InsertCoreValuesByAboutID(array $data): void
     {
         Core_value::insert($data);
+    }
+
+    /**
+     * @method UpdateCoreValueByAboutID()
+     * @param $abouts_id <- id abouts #child_id dari parent_id(about)
+     * @param $core_values_id <- id core value
+     * @param $name <- store update name of corevalue abouts
+     */
+    public function UpdateCoreValueByAboutID(int $abouts_id, int $core_values_id, string $name): void
+    {
+        Core_value::where([
+            ['about_id', '=', $abouts_id],
+            ['core_value_id', '=', $core_values_id]
+        ])->update(['name' => $name]);
     }
 
     public function UpdateAboutDataWithImg(int $id, AboutDTO $dto, string $pathImgAboutBase64): void

@@ -40,7 +40,8 @@ class AboutHandler extends AboutConst
             'description' => $data->GetDescription(),
             'project_is_done' => $data->GetProjectIsDone(),
             'client_response' => $data->GetClientResponse(),
-            'img' => $data->GetImg()
+            'img' => $data->GetImg(),
+            'status' => $data->GetStatus()
         );
     }
 
@@ -103,7 +104,8 @@ class AboutHandler extends AboutConst
                 $request->post('description'),
                 $request->post('project_is_done'),
                 $request->post('client_response'),
-                $request->post('img') ?? null
+                $request->post('img') ?? null,
+                $request->post('status') ?? false
             );
 
             return $this->usecase->update($id, $DTO);
