@@ -8,6 +8,7 @@ use App\Infrastructure\Database\Eloquent\Core_value;
 use App\Internal\About\DTO\AboutDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+
 // use Illuminate\Support\Facades\DB;
 
 class AboutRepository implements AboutDomainInterface
@@ -121,5 +122,10 @@ class AboutRepository implements AboutDomainInterface
     public function DeleteAboutData(int $id): void
     {
         About::whereId($id)->delete();
+    }
+
+    public function DeleteCoreValuesByAboutsID(int $about_id): void
+    {
+        Core_value::whereabouts_id($about_id)->delete();
     }
 }

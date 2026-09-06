@@ -20,4 +20,5 @@ interface AboutDomainInterface
     public function UpdateCoreValueByAboutID(int $abouts_id, int $core_values_id, string $name): void;
     public function UpdateAboutDataNoImg(int $id, AboutDTO $dto): void;
     public function DeleteAboutData(int $id): void;
+    public function DeleteCoreValuesByAboutsID(int $about_id): void;
 }

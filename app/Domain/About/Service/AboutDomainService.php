@@ -179,6 +179,7 @@ class AboutDomainService extends AboutConst
             return $this->Response(422, 'About tidak di temukan');
         }
 
+        $this->repository->DeleteCoreValuesByAboutsID($id);
         $this->repository->DeleteAboutData($id);
         return $this->Response(200, 'Berhasil delete About');
     }
