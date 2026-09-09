@@ -6,6 +6,7 @@ Route::prefix('v1')->group(function () {
     require base_path('app/Internal/Login/Routes/LoginRoutes.php');
     require base_path('app/Internal/Slider/Routes/SliderRoutes.php');
     require base_path('app/Internal/About/Routes/AboutRoutes.php');
+    require base_path('app/Internal/ExperienceWork/Routes/ExperienceWorkRoutes.php');
 });
 
 #test endpoint

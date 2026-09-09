@@ -14,23 +14,23 @@ class TechStackSeeder extends Seeder
     {
         DB::table('techstacks')->insert([
             [
-                'stack' => 'javascript/typescript',
-                'tech' => 'frontend',
+                'tech' => 'javascript/typescript',
+                'stack' => 'frontend',
                 'created_at' => now()
             ],
             [
-                'stack' => 'golang',
-                'tech' => 'backend',
+                'tech' => 'golang',
+                'stack' => 'backend',
                 'created_at' => now()
             ],
             [
-                'stack' => 'next js',
-                'tech' => 'frontend',
+                'tech' => 'next js',
+                'stack' => 'frontend',
                 'created_at' => now()
             ],
             [
-                'stack' => 'laravel',
-                'tech' => 'fullstack',
+                'tech' => 'laravel',
+                'stack' => 'fullstack',
                 'created_at' => now()
             ]
         ]);

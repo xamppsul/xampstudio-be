@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Headers extends Model
 {
-    protected $fillable = ['key', 'platform', 'version'];
+    protected $fillable = ['key', 'platform', 'version', 'created_at'];
 }
