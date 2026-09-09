@@ -5,6 +5,8 @@ namespace App\Internal\ExperienceWork\Repository;
 use App\Domain\ExperienceWork\Interface\ExperienceWorkDomainInterface;
 use App\Infrastructure\Database\Eloquent\Core_value;
 use App\Infrastructure\Database\Eloquent\Experience_work;
+use App\Infrastructure\Database\Eloquent\Experience_work_achivement;
+use App\Infrastructure\Database\Eloquent\Experience_work_techstack;
 use App\Internal\ExperienceWork\DTO\ExperienceWorkDTO;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,22 +21,34 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
     }
 
     public function GetExperienceWorkCollection(
-        ?int $experience_during,
-        ?int $project_is_done,
-        ?int $client_response
+        ?string $title,
+        ?string $start_at,
+        ?string $end_at,
+        ?string $position
     ): LengthAwarePaginator {
-        return Experience_work::with('core_values')
-            ->where('status', true)
-            ->when($experience_during, function ($query) use ($experience_during) {
-                $query->where('experience_during', $experience_during);
+        return Experience_work::with(['achivement', 'techstack.tech'])
+            #ambil pengalaman kerja paling baru
+            ->where('start_at', '<=', now())
+            ->where(function ($query) {
+                #ambil data mulai dari kontrak yang belum berakhir hingga sudah berakhir
+                $query->whereNull('end_at')
+                    ->orWhere('end_at', '>=', now());
             })
-            ->when($project_is_done, function ($query) use ($project_is_done) {
-                $query->where('project_is_done', $project_is_done);
+            ->when($title, function ($query) use ($title) {
+                $query->where('title', 'like', "%$title%");
             })
-            ->when($client_response, function ($query) use ($client_response) {
-                $query->where('client_response', $client_response);
+            ->when($start_at, function ($query) use ($start_at) {
+                $query->where('start_at', 'like', "%$start_at%");
             })
-            ->paginate(5);
+            ->when($end_at, function ($query) use ($end_at) {
+                $query->where('end_at', 'like', "%$end_at%");
+            })
+            ->when($position, function ($query) use ($position) {
+                $query->where('position', $position);
+            })
+            #sort pengalaman terakhir untuk dimunculkan di urutan pertama
+            ->orderByRaw("COALESCE(end_at, start_at) DESC")
+            ->paginate(10);
     }
 
     public function ValidateExperienceWorkByID(int $id): bool
@@ -44,11 +58,8 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
 
     public function GetExperienceWorkByID(int $id): ?Experience_work
     {
-        return Experience_work::where([
-            ['id', '=', $id],
-            ['status', '!=', 0]
-        ])
-            ->with('core_values')
+        return Experience_work::whereId($id)
+            ->with(['achivement', 'techstack.tech'])
             ->first();
     }
 
@@ -60,25 +71,33 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
     //         ->toArray();
     // }
 
-    public function InsertExperienceWorkData(ExperienceWorkDTO $dto, string $pathImgExperienceWorkBase64): Experience_work
+    public function InsertExperienceWorkData(ExperienceWorkDTO $dto): Experience_work
     {
         return Experience_work::create([
-            'img' => $pathImgExperienceWorkBase64,
-            'description' => $dto->description,
-            'experience_during' => $dto->experience_during,
-            'project_is_done' => $dto->project_is_done,
-            'client_response' => $dto->client_response,
-            'status' => $dto->status
+            'title' => $dto->title,
+            'start_at' => $dto->start_at,
+            'end_at' => $dto->end_at,
+            'position' => $dto->position,
+            'description' => $dto->description
         ]);
     }
 
     /**
-     * @method InsertCoreValuesByExperienceWorkID()
+     * @method InsertAchivementByExperienceWorkID()
      * @param $data <- insert core value for ExperienceWork
      */
-    public function InsertCoreValuesByExperienceWorkID(array $data): void
+    public function InsertAchivementByExperienceWorkID(array $data): void
     {
-        Core_value::insert($data);
+        Experience_work_achivement::insert($data);
+    }
+
+    /**
+     * @method InsertTechStackByExperienceWorkID()
+     * @param $data <- insert core value for ExperienceWork
+     */
+    public function InsertTechStackByExperienceWorkID(array $data): void
+    {
+        Experience_work_techstack::insert($data);
     }
 
     /**
@@ -95,29 +114,28 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
         ])->update(['name' => $name]);
     }
 
-    public function UpdateExperienceWorkDataWithImg(int $id, ExperienceWorkDTO $dto, string $pathImgExperienceWorkBase64): void
+    public function UpdateExperienceWorkDataWithImg(int $id, ExperienceWorkDTO $dto): void
     {
         Experience_work::whereId($id)->update([
-            'img' => $pathImgExperienceWorkBase64,
-            'description' => $dto->description,
-            'experience_during' => $dto->experience_during,
-            'project_is_done' => $dto->project_is_done,
-            'client_response' => $dto->client_response,
-            'status' => $dto->status
+            'title' => $dto->title,
+            'start_at' => $dto->start_at,
+            'end_at' => $dto->end_at,
+            'position' => $dto->position,
+            'description' => $dto->description
 
         ]);
     }
 
-    public function UpdateExperienceWorkDataNoImg(int $id, ExperienceWorkDTO $dto): void
-    {
-        Experience_work::whereId($id)->update([
-            'description' => $dto->description,
-            'experience_during' => $dto->experience_during,
-            'project_is_done' => $dto->project_is_done,
-            'client_response' => $dto->client_response,
-            'status' => $dto->status
-        ]);
-    }
+    // public function UpdateExperienceWorkDataNoImg(int $id, ExperienceWorkDTO $dto): void
+    // {
+    //     Experience_work::whereId($id)->update([
+    //         'description' => $dto->description,
+    //         'experience_during' => $dto->experience_during,
+    //         'project_is_done' => $dto->project_is_done,
+    //         'client_response' => $dto->client_response,
+    //         'status' => $dto->status
+    //     ]);
+    // }
 
     public function DeleteExperienceWorkData(int $id): void
     {

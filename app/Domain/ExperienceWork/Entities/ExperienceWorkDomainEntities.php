@@ -6,33 +6,33 @@ class ExperienceWorkDomainEntities
 {
     #declare property for store data
     private int $id;
-    private array $core_values;
-    private int $experience_during;
+    private string $title;
+    private string $start_at;
+    private string $end_at;
+    private string $position;
     private string $description;
-    private int $project_is_done;
-    private int $client_response;
-    private string $img;
-    private bool $status;
+    private array $achivement;
+    private array $tech;
 
     #inject data: id,core_values,experience_during,description,project_is_done,client_response & img
     public function __construct(
         ?int $id = 0,
-        ?array $core_values = [],
-        ?int $experience_during = 0,
+        ?string $title = 'tidak ada title',
+        ?string $start_at = '0000-00-00',
+        ?string $end_at = '0000-00-00',
+        ?string $position = 'tidak ada position',
         ?string $description = 'description tidak ada',
-        ?int $project_is_done = 0,
-        ?int $client_response = 0,
-        ?string $img = null,
-        ?bool $status = false
+        ?array $achivement = [],
+        ?array $tech = [],
     ) {
         $this->id = $id;
-        $this->core_values = $core_values;
-        $this->experience_during = $experience_during;
+        $this->title = $title;
+        $this->start_at = $start_at;
+        $this->end_at = $end_at;
+        $this->position = $position;
         $this->description = $description;
-        $this->project_is_done = $project_is_done;
-        $this->client_response = $client_response;
-        $this->img = $img;
-        $this->status = $status;
+        $this->achivement = $achivement;
+        $this->tech = $tech;
     }
 
     #declare method for return data as type
@@ -41,38 +41,38 @@ class ExperienceWorkDomainEntities
         return $this->id ?? 0;
     }
 
-    public function GetCoreValuesID(): ?array
+    public function GetTitle(): ?string
     {
-        return $this->core_values ?? [];
+        return $this->title ?? 'tidak ada title';
     }
 
-    public function GetExperienceDuring(): ?int
+    public function GetStartAt(): ?string
     {
-        return $this->experience_during ?? 0;
+        return $this->start_at ?? '0000-00-00';
+    }
+
+    public function GetEndAt(): ?string
+    {
+        return $this->end_at ?? '0000-00-00';
+    }
+
+    public function GetPosition(): ?int
+    {
+        return $this->position ?? 'tidak ada position';
     }
 
     public function GetDescription(): ?string
     {
-        return $this->description ?? null;
+        return $this->description ?? 'tidak ada description';
     }
 
-    public function GetProjectIsDone(): ?int
+    public function GetAchivement(): ?array
     {
-        return $this->project_is_done ?? 0;
+        return $this->achivement ?? [];
     }
 
-    public function GetClientResponse(): int
+    public function GetTech(): ?array
     {
-        return $this->client_response ?? 0;
-    }
-
-    public function GetImg(): ?string
-    {
-        return $this->img ?? null;
-    }
-
-    public function GetStatus(): ?bool
-    {
-        return $this->status ?? false;
+        return $this->tech ?? [];
     }
 }

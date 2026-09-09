@@ -35,13 +35,13 @@ class ExperienceWorkHandler extends ExperienceWorkConst
     {
         return array(
             'id' => $data->GetID(),
-            'core_value' => $data->GetCoreValuesID(),
-            'experience_during' => $data->GetExperienceDuring(),
+            'title' => $data->GetTitle(),
+            'start_at' => $data->GetStartAt(),
+            'end_at' => $data->GetEndAt(),
+            'position' => $data->GetPosition(),
             'description' => $data->GetDescription(),
-            'project_is_done' => $data->GetProjectIsDone(),
-            'client_response' => $data->GetClientResponse(),
-            'img' => $data->GetImg(),
-            'status' => $data->GetStatus()
+            'achivement' => $data->GetAchivement(),
+            'tech' => $data->GetTech()
         );
     }
 
@@ -74,13 +74,13 @@ class ExperienceWorkHandler extends ExperienceWorkConst
 
             #save request
             $DTO = new ExperienceWorkDTO(
-                $request->post('core_values') ?? [],
-                $request->post('experience_during'),
+                $request->post('title') ?? null,
+                $request->post('start_at') ?? null,
+                $request->post('end_at') ?? null,
+                $request->post('position') ?? null,
                 $request->post('description') ?? null,
-                $request->post('project_is_done') ?? 0,
-                $request->post('client_response') ?? 0,
-                $request->post('img') ?? null,
-                $request->post('status') ?? false
+                $request->post('achivement') ?? [],
+                $request->post('tech') ?? []
             );
 
             return $this->usecase->store($DTO);
@@ -99,13 +99,13 @@ class ExperienceWorkHandler extends ExperienceWorkConst
             }
 
             $DTO = new ExperienceWorkDTO(
-                $request->post('core_values') ?? [],
-                $request->post('experience_during'),
-                $request->post('description'),
-                $request->post('project_is_done'),
-                $request->post('client_response'),
-                $request->post('img') ?? null,
-                $request->post('status') ?? false
+                $request->post('title') ?? null,
+                $request->post('start_at') ?? null,
+                $request->post('end_at') ?? null,
+                $request->post('position') ?? null,
+                $request->post('description') ?? null,
+                $request->post('achivement') ?? [],
+                $request->post('tech') ?? []
             );
 
             return $this->usecase->update($id, $DTO);

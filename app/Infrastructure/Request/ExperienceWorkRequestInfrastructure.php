@@ -11,12 +11,13 @@ class ExperienceWorkRequestInfrastructure
     {
         #validate body request only (post)
         return Validator::make($request->request->all(), [
-            'core_values' => 'array', //gak wajib kalo mau pake gambar silahkan
-            'experience_during' => 'required|int',
+            'title' => 'required|string',
+            'start_at' => 'required|date',
+            'end_at' => 'required|date',
+            'position' => 'required|in:full time,part time,internship',
             'description' => 'required|string',
-            'project_is_done' => 'required|integer',
-            'client_response' => 'required|integer',
-            'img' => 'string',
+            'achivement' => 'array',
+            'tech' => 'array',
         ]);
     }
 }

@@ -27,9 +27,10 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
         $data = $this->repository->ValidateExperienceWorkCollection(); #default [] jikalau data kosong
         if ($data->isNotEmpty()) {
             return $this->repository->GetExperienceWorkCollection(
-                $request->experience_during,
-                $request->project_is_done,
-                $request->client_response
+                $request->query('title'),
+                $request->query('start_at'),
+                $request->query('end_at'),
+                $request->query('position')
             ); #ambil data
         }
 
@@ -44,16 +45,18 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
         ) {
             return new ExperienceWorkDomainEntities(
                 $this->repository->GetExperienceWorkByID($id)->id,
-                $this->repository->GetExperienceWorkByID($id)->core_values
-                    ->pluck('name')
+                $this->repository->GetExperienceWorkByID($id)->start_at,
+                $this->repository->GetExperienceWorkByID($id)->end_at,
+                $this->repository->GetExperienceWorkByID($id)->position,
+                $this->repository->GetExperienceWorkByID($id)->description,
+                $this->repository->GetExperienceWorkByID($id)->achivement
+                    ->pluck('achive')
                     ->values()
                     ->toArray(),
-                $this->repository->GetExperienceWorkByID($id)->experience_during,
-                $this->repository->GetExperienceWorkByID($id)->description,
-                $this->repository->GetExperienceWorkByID($id)->project_is_done,
-                $this->repository->GetExperienceWorkByID($id)->client_response,
-                $this->repository->GetExperienceWorkByID($id)->img,
-                $this->repository->GetExperienceWorkByID($id)->status
+                $this->repository->GetExperienceWorkByID($id)->techstack
+                    ->pluck('techstacks_id')
+                    ->values()
+                    ->toArray(),
             );
         }
 
@@ -62,54 +65,89 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
 
     public function store(ExperienceWorkDTO $dto): JsonResponse
     {
-        if (empty($dto->img)) {
-            #pake gambar default kalo gak upload gambar real
-            DB::transaction(function () use ($dto) {
-                #insert parent ExperienceWork
-                $ExperienceWork = $this->repository->InsertExperienceWorkData(
-                    $dto,
-                    config('app.img_path_not_fund')
-                );
+        // if (empty($dto->img)) {
+        //     #pake gambar default kalo gak upload gambar real
+        //     DB::transaction(function () use ($dto) {
+        //         #insert parent ExperienceWork
+        //         $ExperienceWork = $this->repository->InsertExperienceWorkData(
+        //             $dto,
+        //             config('app.img_path_not_fund')
+        //         );
 
-                $core_value = [];
-                foreach ($dto->core_values as $data) {
-                    $core_value[] = [
-                        'ExperienceWorks_id' => $ExperienceWork->id,
-                        'name' => $data,
-                        'created_at' => now()
-                    ];
-                }
+        //         $core_value = [];
+        //         foreach ($dto->core_values as $data) {
+        //             $core_value[] = [
+        //                 'ExperienceWorks_id' => $ExperienceWork->id,
+        //                 'name' => $data,
+        //                 'created_at' => now()
+        //             ];
+        //         }
 
-                #insert chid ExperienceWork of core value
-                $this->repository->InsertCoreValuesByExperienceWorkID($core_value);
-            });
-        } else {
-            #default: upload gambar real
-            #validation base 64 image
-            $imgPath = $this->libImg->Index($dto->img, 'ExperienceWork');
-            if ($imgPath instanceof JsonResponse) {
-                return $imgPath;
+        //         #insert chid ExperienceWork of core value
+        //         $this->repository->InsertCoreValuesByExperienceWorkID($core_value);
+        //     });
+        // } else {
+        //     #default: upload gambar real
+        //     #validation base 64 image
+        //     $imgPath = $this->libImg->Index($dto->img, 'ExperienceWork');
+        //     if ($imgPath instanceof JsonResponse) {
+        //         return $imgPath;
+        //     }
+
+        //     DB::transaction(function () use ($dto, $imgPath) {
+        //         $ExperienceWork = $this->repository->InsertExperienceWorkData(
+        //             $dto,
+        //             $imgPath
+        //         );
+
+        //         $core_value = [];
+        //         foreach ($dto->core_values as $data) {
+        //             $core_value[] = [
+        //                 'ExperienceWorks_id' => $ExperienceWork->id,
+        //                 'name' => $data,
+        //                 'created_at' => now()
+        //             ];
+        //         }
+
+        //         #insert chid ExperienceWork of core value
+        //         $this->repository->InsertCoreValuesByExperienceWorkID($core_value);
+        //     });
+        // }
+
+        if (!($dto->start_at < $dto->end_at) || !($dto->end_at > $dto->start_at)) {
+            return $this->Response(422, 'set waktu mulai dan akhir masih salah');
+        }
+
+        DB::transaction(function () use ($dto) {
+            #insert parent ExperienceWork
+            $ExperienceWork = $this->repository->InsertExperienceWorkData(
+                $dto,
+            );
+
+            #insert chid ExperienceWork of achivement
+            $achive = [];
+            foreach ($dto->achivement as $data) {
+                $achive[] = [
+                    'experience_works_id' => $ExperienceWork->id,
+                    'achive' => $data,
+                    'created_at' => now()
+                ];
             }
 
-            DB::transaction(function () use ($dto, $imgPath) {
-                $ExperienceWork = $this->repository->InsertExperienceWorkData(
-                    $dto,
-                    $imgPath
-                );
+            $this->repository->InsertAchivementByExperienceWorkID($achive);
 
-                $core_value = [];
-                foreach ($dto->core_values as $data) {
-                    $core_value[] = [
-                        'ExperienceWorks_id' => $ExperienceWork->id,
-                        'name' => $data,
-                        'created_at' => now()
-                    ];
-                }
+            #insert chid ExperienceWork of achivement
+            $techs = [];
+            foreach ($dto->tech as $data) {
+                $techs[] = [
+                    'experience_works_id' => $ExperienceWork->id,
+                    'techstacks_id' => $data,
+                    'created_at' => now()
+                ];
+            }
 
-                #insert chid ExperienceWork of core value
-                $this->repository->InsertCoreValuesByExperienceWorkID($core_value);
-            });
-        }
+            $this->repository->InsertTechStackByExperienceWorkID($techs);
+        });
         return $this->Response(200, 'Berhasil tambah ExperienceWork');
     }
 
@@ -119,54 +157,54 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
             return $this->Response(422, 'ExperienceWork tidak di temukan');
         }
 
-        if (!empty($dto->img)) {
+        // if (!empty($dto->img)) {
 
-            #request up gambar then upload real img to s3
-            $imgPath = $this->libImg->Index($dto->img, 'ExperienceWork');
-            if ($imgPath instanceof JsonResponse) {
-                return $imgPath;
-            }
+        //     #request up gambar then upload real img to s3
+        //     $imgPath = $this->libImg->Index($dto->img, 'ExperienceWork');
+        //     if ($imgPath instanceof JsonResponse) {
+        //         return $imgPath;
+        //     }
 
-            DB::transaction(function () use ($id, $dto, $imgPath) {
-                #core value is array & not null jalankan request
-                if (is_array($dto->core_values) && !empty($dto->core_values)) {
+        //     DB::transaction(function () use ($id, $dto, $imgPath) {
+        //         #core value is array & not null jalankan request
+        //         if (is_array($dto->core_values) && !empty($dto->core_values)) {
 
-                    foreach ($dto->core_values as $cv) {
-                        $this->repository->UpdateCoreValueByExperienceWorkID(
-                            $id,
-                            $cv['id'],
-                            $cv['name']
-                        );
-                    }
-                }
+        //             foreach ($dto->core_values as $cv) {
+        //                 $this->repository->UpdateCoreValueByExperienceWorkID(
+        //                     $id,
+        //                     $cv['id'],
+        //                     $cv['name']
+        //                 );
+        //             }
+        //         }
 
-                $this->repository->UpdateExperienceWorkDataWithImg(
-                    $id,
-                    $dto,
-                    $imgPath
-                );
-            });
-        } else {
-            #default: gambar tidak berubah
-            DB::transaction(function () use ($id, $dto) {
-                #core value is array & not null jalankan request
-                if (is_array($dto->core_values) && !empty($dto->core_values)) {
+        //         $this->repository->UpdateExperienceWorkDataWithImg(
+        //             $id,
+        //             $dto,
+        //             $imgPath
+        //         );
+        //     });
+        // } else {
+        //     #default: gambar tidak berubah
+        //     DB::transaction(function () use ($id, $dto) {
+        //         #core value is array & not null jalankan request
+        //         if (is_array($dto->core_values) && !empty($dto->core_values)) {
 
-                    foreach ($dto->core_values as $cv) {
-                        $this->repository->UpdateCoreValueByExperienceWorkID(
-                            $id,
-                            $cv['id'],
-                            $cv['name']
-                        );
-                    }
-                }
+        //             foreach ($dto->core_values as $cv) {
+        //                 $this->repository->UpdateCoreValueByExperienceWorkID(
+        //                     $id,
+        //                     $cv['id'],
+        //                     $cv['name']
+        //                 );
+        //             }
+        //         }
 
-                $this->repository->UpdateExperienceWorkDataNoImg(
-                    $id,
-                    $dto
-                );
-            });
-        }
+        //         $this->repository->UpdateExperienceWorkDataNoImg(
+        //             $id,
+        //             $dto
+        //         );
+        //     });
+        // }
 
 
         return $this->Response(200, 'Berhasil ubah ExperienceWork');

@@ -6,30 +6,30 @@ class ExperienceWorkDTO
 {
 
     #declare property store core_values,experience_during,description,project_is_done,client_response,img
-    public array $core_values;
-    public int $experience_during;
+    public string $title;
+    public string $start_at;
+    public string $end_at;
+    public string $position;
     public string $description;
-    public int $project_is_done;
-    public int $client_response;
-    public ?string $img;
-    public bool $status;
+    public array $achivement;
+    public array $tech;
 
     #recive property of request core_values,experience_during,description,project_is_done,client_response,img(base 64)
     public function __construct(
-        array $core_values,
-        int $experience_during,
+        string $title,
+        string $start_at,
+        string $end_at,
+        string $position,
         string $description,
-        int $project_is_done,
-        int $client_response,
-        ?string $img,
-        bool $status = false
+        ?array $achivement = [],
+        ?array $tech = []
     ) {
-        $this->core_values = $core_values;
-        $this->experience_during = $experience_during;
+        $this->title = $title;
+        $this->start_at = $start_at;
+        $this->end_at = $end_at;
+        $this->position = $position;
         $this->description = $description;
-        $this->project_is_done = $project_is_done;
-        $this->client_response = $client_response;
-        $this->img = $img;
-        $this->status = $status;
+        $this->achivement = $achivement;
+        $this->tech = $tech;
     }
 }

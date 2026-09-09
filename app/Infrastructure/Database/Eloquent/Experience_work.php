@@ -24,6 +24,6 @@ class Experience_work extends Model
 
     public function techstack(): HasMany
     {
-        return $this->hasMany(Experience_work_tech_stack::class, 'experience_works_id');
+        return $this->hasMany(Experience_work_techstack::class, 'experience_works_id');
     }
 }

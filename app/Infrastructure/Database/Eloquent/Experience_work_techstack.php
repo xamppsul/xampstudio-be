@@ -5,7 +5,7 @@ namespace App\Infrastructure\Database\Eloquent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Experience_work_tech_stack extends Model
+class Experience_work_techstack extends Model
 {
     protected $fillable = [
         'experience_works_id',
