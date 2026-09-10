@@ -26,4 +26,12 @@ class Experience_work extends Model
     {
         return $this->hasMany(Experience_work_techstack::class, 'experience_works_id');
     }
+
+    public function scopeGetExperienceLast($query)
+    {
+        return $query
+            ->orderByRaw('CASE WHEN end_at IS NULL THEN 0 ELSE 1 END ASC')
+            ->orderBy('end_at', 'desc')
+            ->orderBy('start_at', 'desc');
+    }
 }

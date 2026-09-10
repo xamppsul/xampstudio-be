@@ -65,57 +65,18 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
 
     public function store(ExperienceWorkDTO $dto): JsonResponse
     {
-        // if (empty($dto->img)) {
-        //     #pake gambar default kalo gak upload gambar real
-        //     DB::transaction(function () use ($dto) {
-        //         #insert parent ExperienceWork
-        //         $ExperienceWork = $this->repository->InsertExperienceWorkData(
-        //             $dto,
-        //             config('app.img_path_not_fund')
-        //         );
 
-        //         $core_value = [];
-        //         foreach ($dto->core_values as $data) {
-        //             $core_value[] = [
-        //                 'ExperienceWorks_id' => $ExperienceWork->id,
-        //                 'name' => $data,
-        //                 'created_at' => now()
-        //             ];
-        //         }
+        /**
+         * 1. cek end_at dikirim atau tidak(optional)
+         * 2. jika di kirim maka jalankan rule waktu mulai dan waktu akhir
+         * 3. jika waktu mulai dan waktu akhir tidak sesuai rule yang ditetapkan maka error input
+         * 4. tujuan dari rule validasi start_at and end_at agar input sesuai (waktu awal lebih kecil dari waktu akhir)
+         */
+        if ($this->repository->ValidateEndAtIsExists($dto)) {
 
-        //         #insert chid ExperienceWork of core value
-        //         $this->repository->InsertCoreValuesByExperienceWorkID($core_value);
-        //     });
-        // } else {
-        //     #default: upload gambar real
-        //     #validation base 64 image
-        //     $imgPath = $this->libImg->Index($dto->img, 'ExperienceWork');
-        //     if ($imgPath instanceof JsonResponse) {
-        //         return $imgPath;
-        //     }
-
-        //     DB::transaction(function () use ($dto, $imgPath) {
-        //         $ExperienceWork = $this->repository->InsertExperienceWorkData(
-        //             $dto,
-        //             $imgPath
-        //         );
-
-        //         $core_value = [];
-        //         foreach ($dto->core_values as $data) {
-        //             $core_value[] = [
-        //                 'ExperienceWorks_id' => $ExperienceWork->id,
-        //                 'name' => $data,
-        //                 'created_at' => now()
-        //             ];
-        //         }
-
-        //         #insert chid ExperienceWork of core value
-        //         $this->repository->InsertCoreValuesByExperienceWorkID($core_value);
-        //     });
-        // }
-
-        if (!($dto->start_at < $dto->end_at) || !($dto->end_at > $dto->start_at)) {
-            return $this->Response(422, 'set waktu mulai dan akhir masih salah');
+            if (!$this->repository->ValidateRuleSetDateExperienceWork($dto)) {
+                return $this->Response(422, 'Set waktu mulai dan akhir masih salah');
+            }
         }
 
         DB::transaction(function () use ($dto) {
@@ -216,7 +177,11 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
             return $this->Response(422, 'ExperienceWork tidak di temukan');
         }
 
-        $this->repository->DeleteCoreValuesByExperienceWorksID($id);
+        #child experience work:achivement,tech
+        $this->repository->DeleteAchivementByExperienceWorksID($id);
+        $this->repository->DeleteTechByExperienceWorksID($id);
+
+        #parent experience work
         $this->repository->DeleteExperienceWorkData($id);
         return $this->Response(200, 'Berhasil delete ExperienceWork');
     }

@@ -28,12 +28,8 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
     ): LengthAwarePaginator {
         return Experience_work::with(['achivement', 'techstack.tech'])
             #ambil pengalaman kerja paling baru
-            ->where('start_at', '<=', now())
-            ->where(function ($query) {
-                #ambil data mulai dari kontrak yang belum berakhir hingga sudah berakhir
-                $query->whereNull('end_at')
-                    ->orWhere('end_at', '>=', now());
-            })
+            // ->where('end_at', '<', now())
+            ->getExperienceLast()
             ->when($title, function ($query) use ($title) {
                 $query->where('title', 'like', "%$title%");
             })
@@ -46,8 +42,6 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
             ->when($position, function ($query) use ($position) {
                 $query->where('position', $position);
             })
-            #sort pengalaman terakhir untuk dimunculkan di urutan pertama
-            ->orderByRaw("COALESCE(end_at, start_at) DESC")
             ->paginate(10);
     }
 
@@ -142,8 +136,30 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
         Experience_work::whereId($id)->delete();
     }
 
-    public function DeleteCoreValuesByExperienceWorksID(int $ExperienceWork_id): void
+    public function DeleteAchivementByExperienceWorksID(int $experience_work_id): void
     {
-        Core_value::whereExperienceWorks_id($ExperienceWork_id)->delete();
+        Experience_work_achivement::whereexperience_works_id($experience_work_id)->delete();
+    }
+
+    public function DeleteTechByExperienceWorksID(int $experience_work_id): void
+    {
+        Experience_work_techstack::whereexperience_works_id($experience_work_id)->delete();
+    }
+
+    public function ValidateEndAtIsExists(ExperienceWorkDTO $dto): bool
+    {
+        return !empty($dto->end_at) ? true : false;
+    }
+
+    /**
+     * @method RuleSetDateExperienceWork()
+     * @param $dto
+     * description:
+     * 1. make sure isian start_at and end_at benar
+     * 2. start at lebih kecil dari end at || end at harus lebih besar dari start at (tanggal terurut sesuai bulan)
+     */
+    public function ValidateRuleSetDateExperienceWork(ExperienceWorkDTO $dto): bool
+    {
+        return !($dto->start_at < $dto->end_at) || !($dto->end_at > $dto->start_at) ? false : true;
     }
 }

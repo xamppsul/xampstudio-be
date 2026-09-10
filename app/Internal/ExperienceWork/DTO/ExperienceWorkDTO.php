@@ -8,7 +8,7 @@ class ExperienceWorkDTO
     #declare property store core_values,experience_during,description,project_is_done,client_response,img
     public string $title;
     public string $start_at;
-    public string $end_at;
+    public string|null $end_at;
     public string $position;
     public string $description;
     public array $achivement;
@@ -18,7 +18,7 @@ class ExperienceWorkDTO
     public function __construct(
         string $title,
         string $start_at,
-        string $end_at,
+        ?string $end_at,
         string $position,
         string $description,
         ?array $achivement = [],

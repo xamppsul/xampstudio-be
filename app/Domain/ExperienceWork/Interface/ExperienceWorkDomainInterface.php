@@ -26,5 +26,9 @@ interface ExperienceWorkDomainInterface
     public function UpdateCoreValueByExperienceWorkID(int $experience_works_id, int $core_values_id, string $name): void;
     // public function UpdateExperienceWorkDataNoImg(int $id, ExperienceWorkDTO $dto): void;
     public function DeleteExperienceWorkData(int $id): void;
-    public function DeleteCoreValuesByExperienceWorksID(int $experience_work_id): void;
+    public function DeleteAchivementByExperienceWorksID(int $experience_work_id): void;
+    public function DeleteTechByExperienceWorksID(int $experience_work_id): void;
+
+    public function ValidateEndAtIsExists(ExperienceWorkDTO $dto): bool;
+    public function ValidateRuleSetDateExperienceWork(ExperienceWorkDTO $dto): bool;
 }

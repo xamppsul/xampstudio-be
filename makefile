@@ -13,9 +13,9 @@ dstop:
 	docker compose down
 dbash:
 	docker exec -it app bash
-drefresh:
+dmrefresh:
 	docker exec -it app php artisan migrate:refresh
-drollback:
+dmrollback:
 	docker exec -it app php artisan migrate:rollback
 dmstatus:
 	docker exec -it app php artisan migrate:status

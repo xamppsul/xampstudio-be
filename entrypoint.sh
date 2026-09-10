@@ -149,6 +149,19 @@ else
     echo -e "${GREEN}✓ Passport keys already exist${NC}"
 fi
 
+# Determine current APP_ENV so Steps 5 and 6 can be skipped when it's still
+# "local" (e.g. a container started from a local .env that was never
+# switched to a real environment).
+APP_ENV_VALUE=$(grep -E "^APP_ENV=" .env | cut -d'=' -f2- || true)
+
+if [ "$APP_ENV_VALUE" = "local" ] || [ "$APP_ENV_VALUE" = "development" ]; then
+    echo -e "\n${YELLOW}Step 5: Checking migration status...${NC}"
+    echo -e "${YELLOW}⚠ APP_ENV is 'local' || 'development' — skipping migrations${NC}"
+
+    echo -e "\n${YELLOW}Step 6: Running seeders...${NC}"
+    echo -e "${YELLOW}⚠ APP_ENV is 'local' || 'development' — skipping seeders${NC}"
+else
+
 # Step 5: Run migrations
 # Decide between `migrate:refresh` and a plain `migrate` based on the
 # current migration state:
@@ -205,6 +218,8 @@ if php artisan db:seed --no-interaction --force 2>/dev/null; then
 else
     echo -e "${YELLOW}⚠ Seeding had warnings (non-critical)${NC}"
 fi
+
+fi # end APP_ENV local guard
 
 # Step 7: Passport personal access client
 # Must come after migrations — this writes a row into oauth_clients, which
