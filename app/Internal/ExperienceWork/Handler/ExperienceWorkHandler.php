@@ -74,11 +74,11 @@ class ExperienceWorkHandler extends ExperienceWorkConst
 
             #save request
             $DTO = new ExperienceWorkDTO(
-                $request->post('title') ?? null,
-                $request->post('start_at') ?? null,
+                $request->post('title'),
+                $request->post('start_at'),
                 $request->post('end_at') ?? null,
-                $request->post('position') ?? null,
-                $request->post('description') ?? null,
+                $request->post('position'),
+                $request->post('description'),
                 $request->post('achivement') ?? [],
                 $request->post('tech') ?? []
             );

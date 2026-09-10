@@ -40,28 +40,20 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
 
     public function show(int $id): JsonResponse|ExperienceWorkDomainEntities
     {
-        if (
-            $this->repository->ValidateExperienceWorkByID($id) &&
-            !is_null($this->repository->GetExperienceWorkByID($id))
-        ) {
+        if ($this->repository->ValidateExperienceWorkByID($id)) {
             return new ExperienceWorkDomainEntities(
                 $this->repository->GetExperienceWorkByID($id)->id,
+                $this->repository->GetExperienceWorkByID($id)->title,
                 $this->repository->GetExperienceWorkByID($id)->start_at,
                 $this->repository->GetExperienceWorkByID($id)->end_at,
                 $this->repository->GetExperienceWorkByID($id)->position,
                 $this->repository->GetExperienceWorkByID($id)->description,
-                $this->repository->GetExperienceWorkByID($id)->achivement
-                    ->pluck('achive')
-                    ->values()
-                    ->toArray(),
-                $this->repository->GetExperienceWorkByID($id)->techstack
-                    ->pluck('techstacks_id')
-                    ->values()
-                    ->toArray(),
+                #default collection should convert to array type karena object achivement kita hanya menerima data yang bertipe array
+                $this->repository->GetExperienceWorkByID($id)->achivement_list->toArray(),
+                $this->repository->GetExperienceWorkByID($id)->tech_stack_list->toArray()
             );
         }
-
-        return $this->Response(422, 'ExperienceWork tidak di temukan atau masih nonaktif');
+        return $this->Response(422, 'ExperienceWork tidak di temukan');
     }
 
     public function store(ExperienceWorkDTO $dto): JsonResponse

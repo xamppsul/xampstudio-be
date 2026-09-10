@@ -5,34 +5,34 @@ namespace App\Domain\About\Entities;
 class AboutDomainEntities
 {
     #declare property for store data
-    private int $id;
-    private array $core_values;
-    private int $experience_during;
-    private string $description;
-    private int $project_is_done;
-    private int $client_response;
-    private string $img;
-    private bool $status;
+    private int     $id;
+    private array   $core_values;
+    private int     $experience_during;
+    private string  $description;
+    private int     $project_is_done;
+    private int     $client_response;
+    private string  $img;
+    private bool    $status;
 
-    #inject data: id,core_values,experience_during,description,project_is_done,client_response & img
+    #inject data: id,core_values,experience_during,description,project_is_done,client_response,img & status
     public function __construct(
-        ?int $id = 0,
-        ?array $core_values = [],
-        ?int $experience_during = 0,
-        ?string $description = 'description tidak ada',
-        ?int $project_is_done = 0,
-        ?int $client_response = 0,
-        ?string $img = null,
-        ?bool $status = false
+        int        $id,
+        array      $core_values,
+        int        $experience_during,
+        string     $description,
+        int        $project_is_done,
+        int        $client_response,
+        string     $img,
+        bool       $status
     ) {
-        $this->id = $id;
-        $this->core_values = $core_values;
-        $this->experience_during = $experience_during;
-        $this->description = $description;
-        $this->project_is_done = $project_is_done;
-        $this->client_response = $client_response;
-        $this->img = $img;
-        $this->status = $status;
+        $this->id                   = $id;
+        $this->core_values          = $core_values;
+        $this->experience_during    = $experience_during;
+        $this->description          = $description;
+        $this->project_is_done      = $project_is_done;
+        $this->client_response      = $client_response;
+        $this->img                  = $img;
+        $this->status               = $status;
     }
 
     #declare method for return data as type

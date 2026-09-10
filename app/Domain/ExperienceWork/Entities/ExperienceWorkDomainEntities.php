@@ -5,34 +5,34 @@ namespace App\Domain\ExperienceWork\Entities;
 class ExperienceWorkDomainEntities
 {
     #declare property for store data
-    private int $id;
-    private string $title;
-    private string $start_at;
-    private string $end_at;
-    private string $position;
-    private string $description;
-    private array $achivement;
-    private array $tech;
+    private int             $id;
+    private string          $title;
+    private string          $start_at;
+    private string|null     $end_at;
+    private string          $position;
+    private string          $description;
+    private array           $achivement;
+    private array           $tech;
 
-    #inject data: id,core_values,experience_during,description,project_is_done,client_response & img
+    #inject data: id,title,start_at,end_at,position,description,achivement,tech
     public function __construct(
-        ?int $id = 0,
-        ?string $title = 'tidak ada title',
-        ?string $start_at = '0000-00-00',
-        ?string $end_at = '0000-00-00',
-        ?string $position = 'tidak ada position',
-        ?string $description = 'description tidak ada',
-        ?array $achivement = [],
-        ?array $tech = [],
+        int                 $id,
+        string              $title,
+        string              $start_at,
+        string|null         $end_at,
+        string              $position,
+        string              $description,
+        array               $achivement = [],
+        array               $tech = [],
     ) {
-        $this->id = $id;
-        $this->title = $title;
-        $this->start_at = $start_at;
-        $this->end_at = $end_at;
-        $this->position = $position;
-        $this->description = $description;
-        $this->achivement = $achivement;
-        $this->tech = $tech;
+        $this->id           = $id;
+        $this->title        = $title;
+        $this->start_at     = $start_at;
+        $this->end_at       = $end_at;
+        $this->position     = $position;
+        $this->description  = $description;
+        $this->achivement   = $achivement;
+        $this->tech         = $tech;
     }
 
     #declare method for return data as type
@@ -53,10 +53,10 @@ class ExperienceWorkDomainEntities
 
     public function GetEndAt(): ?string
     {
-        return $this->end_at ?? '0000-00-00';
+        return $this->end_at ?? 'masih sementara bekerja';
     }
 
-    public function GetPosition(): ?int
+    public function GetPosition(): ?string
     {
         return $this->position ?? 'tidak ada position';
     }

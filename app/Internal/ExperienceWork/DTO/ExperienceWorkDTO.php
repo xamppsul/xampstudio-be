@@ -18,11 +18,11 @@ class ExperienceWorkDTO
     public function __construct(
         string $title,
         string $start_at,
-        ?string $end_at,
+        string|null $end_at,
         string $position,
         string $description,
-        ?array $achivement = [],
-        ?array $tech = []
+        array $achivement = [],
+        array $tech = []
     ) {
         $this->title = $title;
         $this->start_at = $start_at;

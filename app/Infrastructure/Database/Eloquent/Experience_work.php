@@ -58,12 +58,9 @@ class Experience_work extends Model
     protected function techStackList(): Attribute
     {
         return Attribute::make(
-            get: function () {
-                $techstack_load = $this->relationLoaded('techstack');
-                if ($techstack_load) {
-                    return $this->techstack->map(fn($item) => $item->tech->tech);
-                }
-            }
+            get: fn() => $this->relationLoaded('techstack')
+                ? $this->techstack->map(fn($item) => $item->tech->tech)
+                : []
         );
     }
 }
