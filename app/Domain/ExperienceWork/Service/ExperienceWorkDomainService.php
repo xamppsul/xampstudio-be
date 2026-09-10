@@ -48,7 +48,10 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
                 $this->repository->GetExperienceWorkByID($id)->end_at,
                 $this->repository->GetExperienceWorkByID($id)->position,
                 $this->repository->GetExperienceWorkByID($id)->description,
-                #default collection should convert to array type karena object achivement kita hanya menerima data yang bertipe array
+                /**
+                 * default collection should convert to array type 
+                 * object achivement dari construct hanya menerima data yang bertipe array
+                 */
                 $this->repository->GetExperienceWorkByID($id)->achivement_list->toArray(),
                 $this->repository->GetExperienceWorkByID($id)->tech_stack_list->toArray()
             );
