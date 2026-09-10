@@ -24,7 +24,8 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
         ?string $title,
         ?string $start_at,
         ?string $end_at,
-        ?string $position
+        ?string $position,
+        ?int $limit = 10
     ): LengthAwarePaginator {
         return Experience_work::with(['achivement', 'techstack.tech'])
             #ambil pengalaman kerja paling baru
@@ -42,7 +43,7 @@ class ExperienceWorkRepository implements ExperienceWorkDomainInterface
             ->when($position, function ($query) use ($position) {
                 $query->where('position', $position);
             })
-            ->paginate(10);
+            ->paginate($limit);
     }
 
     public function ValidateExperienceWorkByID(int $id): bool

@@ -30,7 +30,8 @@ class ExperienceWorkDomainService extends ExperienceWorkConst
                 $request->query('title'),
                 $request->query('start_at'),
                 $request->query('end_at'),
-                $request->query('position')
+                $request->query('position'),
+                $request->query('limit')
             ); #ambil data
         }
 

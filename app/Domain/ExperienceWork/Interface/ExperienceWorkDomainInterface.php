@@ -14,7 +14,8 @@ interface ExperienceWorkDomainInterface
         ?string $title,
         ?string $start_at,
         ?string $end_at,
-        ?string $position
+        ?string $position,
+        ?int $limit = 10
     ): LengthAwarePaginator;
     public function ValidateExperienceWorkByID(int $id): bool;
     public function GetExperienceWorkByID(int $id): ?Experience_work;
